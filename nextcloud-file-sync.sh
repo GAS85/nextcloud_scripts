@@ -12,6 +12,6 @@ echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Filescan +
 start=`date +%s`
 php $COMMAND $OPTIONS >> /var/log/next-cron.log
 end=`date +%s`
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Completed.    Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Filescan Completed.    Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 #echo -------------------------------------------------- >> $LOGFILE
 rm $LOCKFILE
