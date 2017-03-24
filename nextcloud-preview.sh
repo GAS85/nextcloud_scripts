@@ -2,6 +2,8 @@
 
 COMMAND=/var/www/nextcloud/occ
 OPTIONS="preview:pre-generate"
+# use to see all touched files
+#OPTIONS="preview:pre-generate -vvv"
 LOCKFILE=/tmp/nextcloud_preview
 LOGFILE=/var/www/nextcloud/nextcloud.log
 CRONLOGFILE=/var/log/next-cron.log
