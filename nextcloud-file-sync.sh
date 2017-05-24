@@ -3,7 +3,7 @@
 COMMAND=/var/www/nextcloud/occ
 OPTIONS="files:scan --all"
 LOCKFILE=/tmp/nextcloud_file_scan
-LOGFILE=/var/www/nextcloud/nextcloud.log
+LOGFILE=/var/www/nextcloud/data/nextcloud.log
 CRONLOGFILE=/var/log/next-cron.log
 
 [ -f "$LOCKFILE" ] && exit
