@@ -5,7 +5,7 @@ OPTIONS="preview:pre-generate"
 # use to see all touched files
 #OPTIONS="preview:pre-generate -vvv"
 LOCKFILE=/tmp/nextcloud_preview
-LOGFILE=/var/www/nextcloud/nextcloud.log
+LOGFILE=/var/www/nextcloud/data/nextcloud.log
 CRONLOGFILE=/var/log/next-cron.log
 NEXTPATH=/var/www/nextcloud/data/appdata_<INSTANCE>/preview
 
