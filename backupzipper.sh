@@ -59,72 +59,101 @@ echo
 echo $BODY
 megadf -h
 echo
+#
+# So make man inline file with base64 or uuencode. uuencode will not be read by some programms
+#
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH)''
+#echo "Content-Transfer-Encoding: uuencode"
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH)''
+echo "Content-ID: <$(basename $ATTACH)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH $(basename $ATTACH)
+base64 $ATTACH
+#uuencode $ATTACH $(basename $ATTACH)
+#
+# #######################
+#
+# so make man attachment file with uuencode or base64.
+#
+#echo '---q1w2e3r4t5'
+#echo 'Content-Type: application; name="'$(basename $ATTACH)'"'
+#echo "Content-Transfer-Encoding: uuencode"
+##echo "Content-Transfer-Encoding: base64"
+#echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH)'"'
+#echo '---q1w2e3r4t5--'
+##base64 $ATTACH
+#uuencode $ATTACH $(basename $ATTACH)
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH1)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH1)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH1)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH1)''
+echo "Content-ID: <$(basename $ATTACH1)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH1 $(basename $ATTACH1)
+base64 $ATTACH1
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH2)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH2)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH2)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH2)''
+echo "Content-ID: <$(basename $ATTACH2)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH2 $(basename $ATTACH2)
+base64 $ATTACH2
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH3)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH3)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH3)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH3)''
+echo "Content-ID: <$(basename $ATTACH3)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH3 $(basename $ATTACH3)
+base64 $ATTACH3
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH4)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH4)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH4)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH4)''
+echo "Content-ID: <$(basename $ATTACH4)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH4 $(basename $ATTACH4)
+base64 $ATTACH4
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH5)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH5)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH5)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH5)''
+echo "Content-ID: <$(basename $ATTACH5)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH5 $(basename $ATTACH5)
+base64 $ATTACH5
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH6)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH6)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH6)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH6)''
+echo "Content-ID: <$(basename $ATTACH6)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH6 $(basename $ATTACH6)
+base64 $ATTACH6
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH7)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH7)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH7)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH7)''
+echo "Content-ID: <$(basename $ATTACH7)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH7 $(basename $ATTACH7)
+base64 $ATTACH7
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH8)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH8)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH8)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH8)''
+echo "Content-ID: <$(basename $ATTACH8)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH8 $(basename $ATTACH8)
+base64 $ATTACH8
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH9)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH9)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH9)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH9)''
+echo "Content-ID: <$(basename $ATTACH9)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH9 $(basename $ATTACH9)
+base64 $ATTACH9
 echo '---q1w2e3r4t5'
-echo 'Content-Type: application; name="'$(basename $ATTACH10)'"'
-echo "Content-Transfer-Encoding: uuencode"
-echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH10)'"'
+echo 'Content-Type: image/png; name='$(basename $ATTACH10)''
+echo "Content-Transfer-Encoding: base64"
+echo 'Content-Disposition: inline; filename='$(basename $ATTACH10)''
+echo "Content-ID: <$(basename $ATTACH10)>"
 echo '---q1w2e3r4t5--'
-uuencode $ATTACH10 $(basename $ATTACH10)
+base64 $ATTACH10
 ) | /usr/sbin/sendmail $recipients
 
 rm $LOCKFILE
