@@ -28,15 +28,35 @@ pass="$({ choose '!@#$%^\&'
      done
  } | sort -R | awk '{printf "%s",$1}')"
 
+#Cacti Backup -- http://lifein0and1.com/2008/05/15/migrating-cacti-from-one-server-to-another/
+
+#This is cacti working dir
+cd /var/lib/cacti/rra/
+
+ls -1 *.rrd | awk '{print "rrdtool dump "$1" &gt; "$1".xml"}' | sh -x
+tar -czvf $WORKINGDIR/rrd.tgz *.rrd.xml
+rm *.rrd.xml
+
+#end Cacti backup
+
+#to restore Cacti RRDs
+#copy xml into /var/lib/cacti/rra/
+#ls -1 *.rrd.xml | sed 's/\.xml//' | awk '{print "rrdtool restore "$1".xml "$1}' | sh -x
+#chown www-data:www-data *.rrd
+
 cd $WORKINGDIR
 
 #zipping with password from above
-zip --password $pass $BACKUPNAME *.sql.gz 1>$LOCKFILE
+zip --password $pass $BACKUPNAME *gz 1>$LOCKFILE
 
 #Upload to Mega
-megaput --no-progress --path /Root/Backup $BACKUPNAME >>$LOCKFILE
+#megaput --no-progress --path /Root/Backup $BACKUPNAME >>$LOCKFILE
 #megaput -u $megalogin -p $megapass --no-progress --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
-#megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+
+#delete local old backups
+# +15 is older than 15 days
+find backup*zip -mtime +15 -exec rm {} \;
 
 #Email Header
 echo "To: $recipients" > $EMAILFILE
@@ -49,11 +69,12 @@ echo '---q1w2e3r4t5' >> $EMAILFILE
 echo "Content-Type: text/html" >> $EMAILFILE
 echo "Content-Disposition: inline" >> $EMAILFILE
 echo "" >> $EMAILFILE
-echo "The backup was created with password: $pass" >> $EMAILFILE
-echo "Have a nice day and check some statistic." >> $EMAILFILE
-#echo "$(megadf -u $megalogin -p $megapass -h)." >> $EMAILFILE
-echo "$(megadf -h)." >> $EMAILFILE
-echo "Other info: $(cat $LOCKFILE)." >> $EMAILFILE
+echo 'The backup was created with password: '"'$pass'"'<br>' >> $EMAILFILE
+echo "Have a nice day and check some statistic.<br>">> $EMAILFILE
+echo "<br>">> $EMAILFILE
+echo "Backup size: $(du -h $BACKUPNAME | awk '{printf "%s",$1}').<br>" >> $EMAILFILE
+echo "Space information: $(megadf -u $megalogin -p $megapass -h).<br>" >> $EMAILFILE
+echo "Other info: $(cat $LOCKFILE).<br>" >> $EMAILFILE
 echo "" >> $EMAILFILE
 
 #
@@ -91,20 +112,19 @@ echo "" >> $EMAILFILE
 for entry in "$ATTACHDIR"/graph_*_1.png
 do
 	export ATTACH=$entry
-    
-	echo '---q1w2e3r4t5' >> $EMAILFILE
+    echo '---q1w2e3r4t5' >> $EMAILFILE
 	echo 'Content-Type: image/png; name='$(basename $ATTACH)'' >> $EMAILFILE
 	echo "Content-Transfer-Encoding: base64" >> $EMAILFILE
 	echo 'Content-Disposition: inline; filename='$(basename $ATTACH)'' >> $EMAILFILE
 	echo "Content-ID: <$(basename $ATTACH)>" >> $EMAILFILE
 	echo '---q1w2e3r4t5--' >> $EMAILFILE
-	base64 $ATTACH >> $EMAILFILE
-    
+	base64 $ATTACH >> $EMAILFILE    
 done
 
-#send email with password
+#send email with password and attachments
 cat $EMAILFILE | /usr/sbin/sendmail $recipients
 
+#remove temporary files
 rm $LOCKFILE
 rm $EMAILFILE
 exit 0
