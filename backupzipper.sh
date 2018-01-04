@@ -1,6 +1,7 @@
 #!/bin/bash
 
 WORKINGDIR=/media/backup
+CACTIrraDIR=/var/lib/cacti/rra
 LOCKFILE=/tmp/zipping
 EMAILFILE=/tmp/zipping.email
 BACKUPNAME=backup-$(date +"%Y-%m-%d").zip
@@ -15,6 +16,9 @@ from="noreplay@nobody.net"
 
 touch $LOCKFILE
 touch $EMAILFILE
+
+#MySQL all DB backup and gzip if needed
+#mysqldump –all-databases | gzip > $WORKINGDIR/backup-$(date +"%Y-%m-%d").sql.gz
 
 #Random password
 choose() { echo ${1:RANDOM%${#1}:1} $RANDOM; }
@@ -31,7 +35,7 @@ pass="$({ choose '!@#$%^\&'
 #Cacti Backup -- http://lifein0and1.com/2008/05/15/migrating-cacti-from-one-server-to-another/
 
 #This is cacti working dir
-cd /var/lib/cacti/rra/
+cd $CACTIrraDIR
 
 ls -1 *.rrd | awk '{print "rrdtool dump "$1" &gt; "$1".xml"}' | sh -x
 tar -czvf $WORKINGDIR/rrd.tgz *.rrd.xml
