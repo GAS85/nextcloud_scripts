@@ -20,6 +20,14 @@ touch $EMAILFILE
 #MySQL all DB backup and gzip if needed
 #mysqldump –all-databases | gzip > $WORKINGDIR/backup-$(date +"%Y-%m-%d").sql.gz
 
+#To Restore any DB
+#mysql -u root -p
+#CREATE DATABASE nextcloud;
+#GRANT ALL ON nextcloud.* to 'nextcloud'@'localhost' IDENTIFIED BY 'set_database_password';
+#FLUSH PRIVILEGES;
+#exit
+#mysql -u [username] -p[password] [db_name] < nextcloud-sqlbkp.bak
+
 #Random password
 choose() { echo ${1:RANDOM%${#1}:1} $RANDOM; }
 pass="$({ choose '!@#$%^\&'
