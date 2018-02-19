@@ -4,7 +4,7 @@ WORKINGDIR=/media/backup
 CACTIrraDIR=/var/lib/cacti/rra
 LOCKFILE=/tmp/zipping
 EMAILFILE=/tmp/zipping.email
-BACKUPNAME=backup-$(date +"%Y-%m-%d").zip
+BACKUPNAME=backup-$(date +"%Y-%m-%d").gpg
 ATTACHDIR=/files/to/be/attached
 recipients="user1@gmail.com,user2@gmail.com,user3@gmail.com"
 subject="MySQL backup was done"
@@ -18,7 +18,7 @@ touch $LOCKFILE
 touch $EMAILFILE
 
 #MySQL all DB backup and gzip if needed
-#mysqldump –all-databases | gzip > $WORKINGDIR/backup-$(date +"%Y-%m-%d").sql.gz
+#mysqldump –all-databases | tar -czvf > $WORKINGDIR/backup-$(date +"%Y-%m-%d").sql.tgz
 
 #To Restore any DB
 #mysql -u root -p
@@ -45,7 +45,11 @@ pass="$({ choose '!@#$%^\&'
 #This is cacti working dir
 cd $CACTIrraDIR
 
-ls -1 *.rrd | awk '{print "rrdtool dump "$1" &gt; "$1".xml"}' | sh -x
+for entry in *.rrd
+do
+        rrdtool dump "$entry" > "$entry".xml
+done
+
 tar -czvf $WORKINGDIR/rrd.tgz *.rrd.xml
 rm *.rrd.xml
 
@@ -58,8 +62,8 @@ rm *.rrd.xml
 
 cd $WORKINGDIR
 
-#zipping with password from above
-zip --password $pass $BACKUPNAME *gz 1>$LOCKFILE
+#GPG with password from above
+tar -czv *gz | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME
 
 #Upload to Mega
 #megaput --no-progress --path /Root/Backup $BACKUPNAME >>$LOCKFILE
@@ -68,7 +72,7 @@ megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
 
 #delete local old backups
 # +15 is older than 15 days
-find backup*zip -mtime +15 -exec rm {} \;
+find backup*gpg -mtime +15 -exec rm {} \;
 
 #Email Header
 echo "To: $recipients" > $EMAILFILE
