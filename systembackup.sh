@@ -12,8 +12,6 @@ megalogin="yyyyyy"
 LOCKFILE=/tmp/sysbackup
 EMAILFILE=/tmp/sysbackup.mail
 BACKUPNAME=sys-backup-$(date +"%Y-%m-%d").tar.gz.gpg
-#ToFind="$(echo $BACKUPNAME | cut -c1-3)"
-#ToFind=$ToFind"*""$(echo $BACKUPNAME | sed 's/.*\(...\)/\1/')"
 
 [ -f "$LOCKFILE" ] && exit
 
@@ -44,8 +42,7 @@ pass="$({
 cd $WORKINGDIR
 
 #Do System backup
-tar -cvp --exclude=$WORKINGDIR --exclude=/home/gas/samba --exclude=/proc --exclude=/tmp --exclude=/mnt --exclude=/dev --exclude=/sys --exclude=/run --exclude=/media --exclude=/var/log --exclude=/var/cache/apt/archives --exclude=/var/www/nextcloud/data --exclude=/usr/src/linux-headers* --one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
-# tar -cvpf sys-backup-$(date +"%Y-%m-%d").tar.gz --exclude=/proc --exclude=/tmp --exclude=/mnt --exclude=/dev --exclude=/sys --exclude=/run --exclude=/media --exclude=/var/log --exclude=/var/cache/apt/archives --exclude=/var/www/nextcloud/data --exclude=/usr/src/linux-headers* --one-file-system /
+tar -cvp --exclude=$WORKINGDIR --exclude=/proc --exclude=/tmp --exclude=/mnt --exclude=/dev --exclude=/sys --exclude=/run --exclude=/media --exclude=/var/log --exclude=/var/cache/apt/archives --exclude=/var/www/nextcloud/data --exclude=/usr/src/linux-headers* --one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
 
 middle=`date +%s`
 
