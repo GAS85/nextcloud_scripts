@@ -46,7 +46,7 @@ pass="$(echo "${pass}$(sha1sum <<< $pass$(date) | awk '{printf "%s",$1}')" | gre
 cd $WORKINGDIR
 
 #Do System backup
-tar -cvp --exclude=$WORKINGDIR --exclude=/home/gas/samba --exclude=/proc --exclude=/tmp --exclude=/mnt --exclude=/dev --exclude=/sys$
+tar -cvp --exclude=$WORKINGDIR --exclude=/proc --exclude=/tmp --exclude=/mnt --exclude=/dev --exclude=/sys --exclude=/run --exclude=/media --exclude=/var/log --exclude=/var/cache/apt/archives --exclude=/var/www/nextcloud/data --exclude=/usr/src/linux-headers* --one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
 
 middle=`date +%s`
 
@@ -72,7 +72,7 @@ echo "Content-Type: text/html" >> $EMAILFILE
 echo "Content-Disposition: inline" >> $EMAILFILE
 echo "" >> $EMAILFILE
 echo 'The backup was created with password: '"'$pass'"'<br>' >> $EMAILFILE
-echo "It took `expr $middle - $start`s to create and `expr $end - $middle`s to upload backup file, or `expr $end - $start`s at all.<$
+echo "It took `expr $middle - $start`s to create and `expr $end - $middle`s to upload backup file, or `expr $end - $start`s at all.<$br>" >> $EMAILFILE
 echo "Have a nice day and check some statistic.<br>">> $EMAILFILE
 echo "<br>">> $EMAILFILE
 echo "Backup size: $(du -h $BACKUPNAME | awk '{printf "%s",$1}').<br>" >> $EMAILFILE
