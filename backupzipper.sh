@@ -4,7 +4,8 @@ WORKINGDIR=/media/backup
 CACTIrraDIR=/var/lib/cacti/rra
 LOCKFILE=/tmp/zipping
 EMAILFILE=/tmp/zipping.email
-BACKUPNAME=backup-$(date +"%Y-%m-%d").gpg
+#BACKUPNAME=backup-$(date +"%Y-%m-%d").gpg
+BACKUPNAME=backup-$(date +"%Y-%m-%d")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).gpg
 ATTACHDIR=/files/to/be/attached
 recipients="user1@gmail.com,user2@gmail.com,user3@gmail.com"
 subject="MySQL backup was done"
@@ -12,12 +13,28 @@ from="noreplay@nobody.net"
 #megapass="xxxxxxx"
 #megalogin="zzzzzzz"
 
+#dbuser="root"
+#dbpass="yyyy"
+
+ToFind="$(echo $BACKUPNAME | cut -c1-6)*$(echo $BACKUPNAME | sed 's/.*\(...\)/\1/')"
+
 [ -f "$LOCKFILE" ] && exit
+
+#Check if Working dir exist
+if [ ! -d "$WORKINGDIR" ]; then
+	echo "Directory $WORKINGDIR does not exist"
+    exit 1
+fi
+
+#if [ ! -d "$WORKINGDIR/tmp" ]; then
+#	mkdir $WORKINGDIR/tmp
+#fi
 
 touch $LOCKFILE
 touch $EMAILFILE
 
 #MySQL all DB backup and gzip if needed
+#mysqldump --all-databases --single-transaction -u $dbuser -p$dbpass > $WORKINGDIR/tmp/all_databases.sql
 #mysqldump –all-databases | tar -czvf > $WORKINGDIR/backup-$(date +"%Y-%m-%d").sql.tgz
 
 #To Restore any DB
@@ -29,16 +46,7 @@ touch $EMAILFILE
 #mysql -u [username] -p[password] [db_name] < nextcloud-sqlbkp.bak
 
 #Random password
-choose() { echo ${1:RANDOM%${#1}:1} $RANDOM; }
-pass="$({ choose '!@#$%^\&'
-  choose '0123456789'
-  choose 'abcdefghijklmnopqrstuvwxyz'
-  choose 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  for i in $( seq 1 $(( 4 + RANDOM % 16 )) )
-     do
-        choose '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-     done
- } | sort -R | awk '{printf "%s",$1}')"
+pass="$(gpg --armor --gen-random 1 48)"
 
 #Cacti Backup -- http://lifein0and1.com/2008/05/15/migrating-cacti-from-one-server-to-another/
 
@@ -50,6 +58,7 @@ do
         rrdtool dump "$entry" > "$entry".xml
 done
 
+#tar -cvf $WORKINGDIR/tmp/rrd.tar *.rrd.xml
 tar -czvf $WORKINGDIR/rrd.tgz *.rrd.xml
 rm *.rrd.xml
 
@@ -64,15 +73,17 @@ cd $WORKINGDIR
 
 #GPG with password from above
 tar -czv *gz | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME
+#tar -czv tmp/* | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME
 
 #Upload to Mega
 #megaput --no-progress --path /Root/Backup $BACKUPNAME >>$LOCKFILE
-#megaput -u $megalogin -p $megapass --no-progress --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
-megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+megaput -u $megalogin -p $megapass --no-progress --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+#megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
 
 #delete local old backups
 # +15 is older than 15 days
-find backup*gpg -mtime +15 -exec rm {} \;
+find "$ToFind" -mtime +15 -exec rm {} \; 2>>$LOCKFILE
+#find backup*gpg -mtime +15 -exec rm {} \;
 
 #Email Header
 echo "To: $recipients" > $EMAILFILE
@@ -89,8 +100,9 @@ echo 'The backup was created with password: '"'$pass'"'<br>' >> $EMAILFILE
 echo "Have a nice day and check some statistic.<br>">> $EMAILFILE
 echo "<br>">> $EMAILFILE
 echo "Backup size: $(du -h $BACKUPNAME | awk '{printf "%s",$1}').<br>" >> $EMAILFILE
+echo "MD5 of Backup file: $(md5sum $BACKUPNAME | awk '{printf "%s",$1}' | tr 'a-z' 'A-Z').<br>" >> $EMAILFILE
 echo "Space information: $(megadf -u $megalogin -p $megapass -h).<br>" >> $EMAILFILE
-echo "Other info: $(cat $LOCKFILE).<br>" >> $EMAILFILE
+[ -s file.name ] && echo "Other info: $(cat $LOCKFILE).<br>" >> $EMAILFILE
 echo "" >> $EMAILFILE
 
 #
@@ -134,13 +146,15 @@ do
 	echo 'Content-Disposition: inline; filename='$(basename $ATTACH)'' >> $EMAILFILE
 	echo "Content-ID: <$(basename $ATTACH)>" >> $EMAILFILE
 	echo '---q1w2e3r4t5--' >> $EMAILFILE
-	base64 $ATTACH >> $EMAILFILE    
+	base64 $ATTACH >> $EMAILFILE
 done
 
 #send email with password and attachments
 cat $EMAILFILE | /usr/sbin/sendmail $recipients
 
 #remove temporary files
+#rm $WORKINGDIR/tmp/*
 rm $LOCKFILE
 rm $EMAILFILE
+
 exit 0
