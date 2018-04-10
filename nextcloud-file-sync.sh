@@ -6,7 +6,13 @@ LOCKFILE=/tmp/nextcloud_file_scan
 LOGFILE=/var/www/nextcloud/data/nextcloud.log
 CRONLOGFILE=/var/log/next-cron.log
 
-[ -f "$LOCKFILE" ] && exit
+#[ -f "$LOCKFILE" ] && exit
+
+if [ -f "$LOCKFILE" ]; then
+	# Remove lock file if script fails last time and did not run longer than 10 days due to lock file.
+	find "$LOCKFILE" -mtime +10 -type f -delete
+    exit 1
+fi
 
 touch $LOCKFILE
 echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Filescan +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
