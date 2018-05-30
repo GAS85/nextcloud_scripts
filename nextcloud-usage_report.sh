@@ -1,11 +1,15 @@
 #!/bin/bash
 
 # By Georgiy Sitnikov.
+#
 # This script works with https://apps.nextcloud.com/apps/user_usage_report
+#
 # Will generate report and output it in cacti format
 # Supports Argument as "user" if you need to check statistic for one user only
 # run ./nextcloud-usage_report.sh user to get specific user information
-# AS-IS without any worrenty
+# AS-IS without any warranty
+#
+# output felds are: storage_all, storage_used, shares_new, files_all, files_new, files_read
 
 COMMAND=/var/www/nextcloud/occ
 OPTIONS="usage-report:generate"
