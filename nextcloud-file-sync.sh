@@ -1,12 +1,16 @@
 #!/bin/bash
 
+# By Georgiy Sitnikov.
+#
+# Will do external shares rescan for nextcloud and put execution information in NC log
+#
+# AS-IS without any warranty
+
 COMMAND=/var/www/nextcloud/occ
 OPTIONS="files:scan"
 LOCKFILE=/tmp/nextcloud_file_scan
 LOGFILE=/var/www/nextcloud/data/nextcloud.log
 CRONLOGFILE=/var/log/next-cron.log
-
-#[ -f "$LOCKFILE" ] && exit
 
 if [ -f "$LOCKFILE" ]; then
 	# Remove lock file if script fails last time and did not run longer than 10 days due to lock file.
@@ -37,11 +41,17 @@ date >> $CRONLOGFILE
 #   or
 # "user_id/files/mount_name/path"
 
-#get ALL external mounting points and users
+# get ALL external mounting points and users
 php $COMMAND files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}' > $LOCKFILE
 
-#rescan all shares
+## Choice one
+# rescan all shares
 cat $LOCKFILE | while read line ; do php $COMMAND $OPTIONS --path="$line" >> $CRONLOGFILE ; done
+# rescan all files for specific "user1"
+#php $COMMAND $OPTIONS user1 >> $CRONLOGFILE
+# rescan WHOLE cloud
+#php $COMMAND $OPTIONS --all >> $CRONLOGFILE
+
 
 end=`date +%s`
 echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Filescan Completed.    Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
