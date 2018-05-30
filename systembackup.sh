@@ -1,20 +1,34 @@
 #!/bin/bash
 
-#Please do not use root folder
-WORKINGDIR=/some/folder
-recipients="test@gmail.com"
-subject="System backup was done"
-from="noreplay@nobody.net"
-megapass="xxxxxx"
-megalogin="yyyyyy"
-BACKUPNAME=sys-backup-$(date +"%Y-%m-%d").tar.gz.gpg
+# By Georgiy Sitnikov.
+#
+# Will do system backup and upload encrypted to mega - NEEDS megatools
+#
+# AS-IS without any warranty
 
-###Please do not edit following 3 Lines:
+# PLEASE Create "Backup" Folder in Mega
+
+# Please do not use root folder for backup
+WORKINGDIR=/some/folder
+recipients="your@email.com"
+subject="System backup was done"
+from="noreplay@your.domain"
+megalogin="yyyyyy@TOBE.PROVIDED"
+megapass="xxxxxxTOBEPROVIDED"
+
+### Please do not edit following Lines:
 LOCKFILE=/tmp/sysbackup
 EMAILFILE=/tmp/sysbackup.mail
+BACKUPNAME=backup-$(date +"%Y-%m-%d")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).gpg
+#BACKUPNAME=sys-backup-$(date +"%Y-%m-%d").tar.gz.gpg
 ToFind="$(echo $BACKUPNAME | cut -c1-5)*$(echo $BACKUPNAME | sed 's/.*\(...\)/\1/')"
 
-[ -f "$LOCKFILE" ] && exit
+#[ -f "$LOCKFILE" ] && exit
+if [ -f "$LOCKFILE" ]; then
+	# Remove lock file if script fails last time and did not run longer than 35 days due to lock file.
+	find "$LOCKFILE" -mtime +35 -type f -delete
+    exit 1
+fi
 
 #Check if Working dir exist
 if [ ! -d "$WORKINGDIR" ]; then
@@ -27,34 +41,41 @@ touch $EMAILFILE
 
 start=`date +%s`
 
-#Random password
-choose() { echo ${1:RANDOM%${#1}:1} $RANDOM; }
-pass="$({
-  choose '!@#$%^\&'
-  choose '0123456789'
-  choose 'abcdefghijklmnopqrstuvwxyz'
-  choose 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  for i in $( seq 1 $(( 4 + RANDOM % 20 )) )
-     do
-        choose '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-     done
- } | sort -R | awk '{printf "%s",$1}')"
-
-#increase password length with sha1
-pass="$(echo "${pass}$(sha1sum <<< $pass$(date) | awk '{printf "%s",$1}')" | grep -o . | shuf | tr -d "\n")"
+# Random password generator. 48 is a password lenght 
+pass="$(gpg --armor --gen-random 1 48)"
 
 cd $WORKINGDIR
 
-#Do System backup
-tar -cvp --exclude=$WORKINGDIR --exclude=/proc --exclude=/tmp --exclude=/mnt --exclude=/dev --exclude=/sys --exclude=/run --exclude=/media --exclude=/var/log --exclude=/var/cache/apt/archives --exclude=/var/www/nextcloud/data --exclude=/usr/src/linux-headers* --one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
+# Do System backup
+tar -cvpz \
+# Exclude working directory with Backups
+--exclude=$WORKINGDIR \
+# Exclude DATA folder of the Nextcloud - it is ususally huge and better to backup it separately
+--exclude=/var/www/nextcloud/data \
+--exclude=/proc \
+--exclude=/tmp \
+--exclude=/mnt \
+--exclude=/dev \
+--exclude=/sys \
+--exclude=/run \ 
+--exclude=/media \ 
+--exclude=/var/log \
+--exclude=/var/cache/apt/archives \
+--exclude=/usr/src/linux-headers* \ 
+# Excluding any HOME not needed folders
+--exclude=/home/*/.gvfs \
+--exclude=/home/*/.cache \ 
+--exclude=/home/*/.local/share/Trash \
+# Stay in local file system when creating archive and encrypt with PGP
+--one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
 
 middle=`date +%s`
 
-#Upload to Mega
+#Upload backup to Mega
 megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
 
 #delete local old backups
-# +15 is older than 15 days
+# +15 is older than 15 days - basically any other backup.
 find "$ToFind" -mtime +15 -exec rm {} \; 2>>$LOCKFILE
 #find sys*gpg -mtime +15 -exec rm {} \; 2>>$LOCKFILE
 
@@ -80,7 +101,7 @@ echo "SHA256 of backup file: $(sha256sum $BACKUPNAME | awk '{printf "%s",$1}' | 
 echo "<br>">> $EMAILFILE
 echo "Space information: $(megadf -u $megalogin -p $megapass -h).<br>" >> $EMAILFILE
 [ -s file.name ] && echo "Other info: $(cat $LOCKFILE).<br>" >> $EMAILFILE
-#echo "" >> $EMAILFILE
+#echo "<br>">> $EMAILFILE
 
 #send email with password
 cat $EMAILFILE | /usr/sbin/sendmail $recipients
@@ -88,5 +109,8 @@ cat $EMAILFILE | /usr/sbin/sendmail $recipients
 #remove temporary files
 rm $LOCKFILE
 rm $EMAILFILE
+
+# Opt: save password locally if Email fails, or you do not want to send it.
+#echo '"$(date +"%Y-%m-%d")" - The backup ("$BACKUPNAME") was created with password: '"'$pass'"'' >> $WORKINGDIR/passes.txt
 
 exit 0
