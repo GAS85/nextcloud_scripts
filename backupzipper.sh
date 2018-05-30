@@ -1,18 +1,25 @@
 #!/bin/bash
 
+# By Georgiy Sitnikov.
+# Will zip and encrypt backup of your MySQL DB and Cacti rrds
+# MySQL Backup should be done separatly, or uncommented here as option.
+# AS-IS without any warranty
+
 WORKINGDIR=/media/backup
 CACTIrraDIR=/var/lib/cacti/rra
-LOCKFILE=/tmp/zipping
-EMAILFILE=/tmp/zipping.email
-#BACKUPNAME=backup-$(date +"%Y-%m-%d").gpg
-BACKUPNAME=backup-$(date +"%Y-%m-%d")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).gpg
 ATTACHDIR=/files/to/be/attached
 recipients="user1@gmail.com,user2@gmail.com,user3@gmail.com"
-subject="MySQL backup was done"
+subject="MySQL backup done"
 from="noreplay@nobody.net"
-#megapass="xxxxxxx"
-#megalogin="zzzzzzz"
+megapass="xxxxxxx"
+megalogin="zzzzzzz"
 
+#BACKUPNAME=backup-$(date +"%Y-%m-%d").gpg
+BACKUPNAME=backup-$(date +"%Y-%m-%d")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).gpg
+LOCKFILE=/tmp/zipping
+EMAILFILE=/tmp/zipping.email
+
+#Use for MySQL backup and restore from this script
 #dbuser="root"
 #dbpass="yyyy"
 
@@ -45,7 +52,7 @@ touch $EMAILFILE
 #exit
 #mysql -u [username] -p[password] [db_name] < nextcloud-sqlbkp.bak
 
-#Random password
+#Random password 48 is a password lenght 
 pass="$(gpg --armor --gen-random 1 48)"
 
 #Cacti Backup -- http://lifein0and1.com/2008/05/15/migrating-cacti-from-one-server-to-another/
