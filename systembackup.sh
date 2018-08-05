@@ -19,21 +19,27 @@ megapass="xxxxxxTOBEPROVIDED"
 ### Please do not edit following Lines:
 LOCKFILE=/tmp/sysbackup
 EMAILFILE=/tmp/sysbackup.mail
-BACKUPNAME=backup-$(date +"%Y-%m-%d")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).gpg
-#BACKUPNAME=sys-backup-$(date +"%Y-%m-%d").tar.gz.gpg
-ToFind="$(echo $BACKUPNAME | cut -c1-5)*$(echo $BACKUPNAME | sed 's/.*\(...\)/\1/')"
+extension=.tar.gpg
+BACKUPNAME=backup-$(date +"%Y-%m-%d")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 )$extension
+#Check if Backup file name already taken
+if [ -f "$BACKUPNAME" ]; then
+        # Added time to Backup name
+	echo WARNING - Backup file $BACKUPNAME exist, will take another name to create backup.
+	BACKUPNAME=backup-$(date +"%Y-%m-%d_%T")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 )$extension
+fi
+ToFind="$(echo $BACKUPNAME | cut -c1-6)*$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 )$extension"
 
 #[ -f "$LOCKFILE" ] && exit
 if [ -f "$LOCKFILE" ]; then
 	# Remove lock file if script fails last time and did not run longer than 35 days due to lock file.
 	find "$LOCKFILE" -mtime +35 -type f -delete
-    exit 1
+	exit 1
 fi
 
 #Check if Working dir exist
 if [ ! -d "$WORKINGDIR" ]; then
-        echo "Directory $WORKINGDIR does not exist"
-    exit 1
+	echo "Directory $WORKINGDIR does not exist"
+	exit 1
 fi
 
 touch $LOCKFILE
@@ -46,28 +52,25 @@ pass="$(gpg --armor --gen-random 1 48)"
 
 cd $WORKINGDIR
 
+# List excluded of folders
+excludeFromBackup="--exclude=$WORKINGDIR\
+ --exclude=/var/www/nextcloud/data\
+ --exclude=/proc\
+ --exclude=/tmp\
+ --exclude=/mnt\
+ --exclude=/dev\
+ --exclude=/sys\
+ --exclude=/run\
+ --exclude=/media\
+ --exclude=/var/log\
+ --exclude=/var/cache/apt/archives\
+ --exclude=/usr/src/linux-headers*\
+ --exclude=/home/*/.gvfs\
+ --exclude=/home/*/.cache\
+ --exclude=/home/*/.local/share/Trash\"
+
 # Do System backup
-tar -cvpz \
-# Exclude working directory with Backups
---exclude=$WORKINGDIR \
-# Exclude DATA folder of the Nextcloud - it is ususally huge and better to backup it separately
---exclude=/var/www/nextcloud/data \
---exclude=/proc \
---exclude=/tmp \
---exclude=/mnt \
---exclude=/dev \
---exclude=/sys \
---exclude=/run \ 
---exclude=/media \ 
---exclude=/var/log \
---exclude=/var/cache/apt/archives \
---exclude=/usr/src/linux-headers* \ 
-# Excluding any HOME not needed folders
---exclude=/home/*/.gvfs \
---exclude=/home/*/.cache \ 
---exclude=/home/*/.local/share/Trash \
-# Stay in local file system when creating archive and encrypt with PGP
---one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
+tar -cvp $excludeFromBackup --one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
 
 middle=`date +%s`
 
@@ -75,9 +78,9 @@ middle=`date +%s`
 megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
 
 #delete local old backups
-# +15 is older than 15 days - basically any other backup.
-find "$ToFind" -mtime +15 -exec rm {} \; 2>>$LOCKFILE
-#find sys*gpg -mtime +15 -exec rm {} \; 2>>$LOCKFILE
+# +45 is older than 45 days - basically any other backup.
+find "$ToFind" -mtime +45 -exec rm {} \; 2>>$LOCKFILE
+#find backup*gpg -mtime +45 -exec rm {} \; 2>>$LOCKFILE
 
 end=`date +%s`
 
@@ -93,11 +96,14 @@ echo "Content-Type: text/html" >> $EMAILFILE
 echo "Content-Disposition: inline" >> $EMAILFILE
 echo "" >> $EMAILFILE
 echo 'The backup was created with password: '"'$pass'"'<br>' >> $EMAILFILE
-echo "It took `expr $middle - $start`s to create and `expr $end - $middle`s to upload backup file, or `expr $end - $start`s at all.<$br>" >> $EMAILFILE
+echo "It took `expr $middle - $start`s to create and `expr $end - $middle`s to upload backup file, or `expr $end - $start`s at all.<br>" >> $EMAILFILE
 echo "Have a nice day and check some statistic.<br>">> $EMAILFILE
 echo "<br>">> $EMAILFILE
 echo "Backup size: $(du -h $BACKUPNAME | awk '{printf "%s",$1}').<br>" >> $EMAILFILE
-echo "SHA256 of backup file: $(sha256sum $BACKUPNAME | awk '{printf "%s",$1}' | tr 'a-z' 'A-Z').<br>" >> $EMAILFILE
+
+sha=$(sha256sum $BACKUPNAME | awk '{printf "%s",$1}' | tr 'a-z' 'A-Z')
+
+echo "SHA256 of backup file: $sha.<br>" >> $EMAILFILE
 echo "<br>">> $EMAILFILE
 echo "Space information: $(megadf -u $megalogin -p $megapass -h).<br>" >> $EMAILFILE
 [ -s file.name ] && echo "Other info: $(cat $LOCKFILE).<br>" >> $EMAILFILE
@@ -105,12 +111,13 @@ echo "Space information: $(megadf -u $megalogin -p $megapass -h).<br>" >> $EMAIL
 
 #send email with password
 cat $EMAILFILE | /usr/sbin/sendmail $recipients
+#cat $EMAILFILE
 
 #remove temporary files
 rm $LOCKFILE
 rm $EMAILFILE
 
 # Opt: save password locally if Email fails, or you do not want to send it.
-#echo '"$(date +"%Y-%m-%d")" - The backup ("$BACKUPNAME") was created with password: '"'$pass'"'' >> $WORKINGDIR/passes.txt
+echo "$(date) - The backup ($BACKUPNAME) was created with password: $pass - SHA256 of backup file: $sha" >> $WORKINGDIR/passes.txt
 
 exit 0
