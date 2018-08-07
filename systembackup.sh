@@ -27,7 +27,7 @@ BACKUPNAME=backup-$(date +"%Y-%m-%d")_$nonce$extension
 #Check if Backup file name already taken
 if [ -f "$BACKUPNAME" ]; then
         # Added time to Backup name
-	echo WARNING - Backup file $BACKUPNAME exist, will take another name to create backup.
+	echo "WARNING - Backup file $BACKUPNAME exist, will take another name to create backup."
 	BACKUPNAME=backup-$(date +"%Y-%m-%d_%T")_$nonce$extension
 fi
 ToFind="$(echo $BACKUPNAME | cut -c1-6)*$nonce$extension"
