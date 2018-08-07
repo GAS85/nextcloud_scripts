@@ -84,7 +84,7 @@ middle=`date +%s`
 upload_command="megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME"
 
 NEXT_WAIT_TIME=10
-until upload_command || [ $NEXT_WAIT_TIME -eq 4 ]; do
+until $upload_command || [ $NEXT_WAIT_TIME -eq 4 ]; do
    sleep $(( NEXT_WAIT_TIME++ ))
    echo "$(date) - ERROR - Mega Upload was failed, will retry after 10 seconds ($BACKUPNAME)." >> $logfile
 done
