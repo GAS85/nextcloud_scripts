@@ -92,8 +92,15 @@ tar -czv *gz | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME
 
 #Upload to Mega
 #megaput --no-progress --path /Root/Backup $BACKUPNAME >>$LOCKFILE
-megaput -u $megalogin -p $megapass --no-progress --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+#megaput -u $megalogin -p $megapass --no-progress --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
 #megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+upload_command="megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME"
+
+NEXT_WAIT_TIME=10
+until $upload_command || [ $NEXT_WAIT_TIME -eq 4 ]; do
+   sleep $(( NEXT_WAIT_TIME++ ))
+   #echo "$(date) - ERROR - Mega Upload was failed, will retry after 10 seconds ($BACKUPNAME)." >> $logfile
+done
 
 #delete local old backups
 # +15 is older than 15 days
