@@ -23,7 +23,15 @@ EMAILFILE=/tmp/zipping.email
 #dbuser="root"
 #dbpass="yyyy"
 
-ToFind="$(echo $BACKUPNAME | cut -c1-6)*$(echo $BACKUPNAME | sed 's/.*\(...\)/\1/')"
+#Check if Backup file name already taken
+if [ -f "$BACKUPNAME" ]; then
+        # Added time to Backup name
+	echo WARNING - Backup file $BACKUPNAME exist, will take another name (add time stamp) to create backup.
+	BACKUPNAME=backup-$(date +"%Y-%m-%d_%T")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).gpg
+fi
+ToFind="$(echo $BACKUPNAME | cut -c1-6)*$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).gpg"
+
+#ToFind="$(echo $BACKUPNAME | cut -c1-6)*$(echo $BACKUPNAME | sed 's/.*\(...\)/\1/')"
 
 [ -f "$LOCKFILE" ] && exit
 
