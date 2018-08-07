@@ -6,6 +6,8 @@
 #
 # AS-IS without any warranty
 
+nonce=$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 )
+
 # PLEASE Create "Backup" Folder in Mega
 
 # Please do not use root folder for backup
@@ -15,19 +17,20 @@ subject="System backup was done"
 from="noreplay@your.domain"
 megalogin="yyyyyy@TOBE.PROVIDED"
 megapass="xxxxxxTOBEPROVIDED"
+logfile=/var/log/backup_$nonce.log
 
 ### Please do not edit following Lines:
 LOCKFILE=/tmp/sysbackup
 EMAILFILE=/tmp/sysbackup.mail
 extension=.tar.gpg
-BACKUPNAME=backup-$(date +"%Y-%m-%d")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 )$extension
+BACKUPNAME=backup-$(date +"%Y-%m-%d")_$nonce$extension
 #Check if Backup file name already taken
 if [ -f "$BACKUPNAME" ]; then
         # Added time to Backup name
 	echo WARNING - Backup file $BACKUPNAME exist, will take another name to create backup.
-	BACKUPNAME=backup-$(date +"%Y-%m-%d_%T")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 )$extension
+	BACKUPNAME=backup-$(date +"%Y-%m-%d_%T")_$nonce$extension
 fi
-ToFind="$(echo $BACKUPNAME | cut -c1-6)*$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 )$extension"
+ToFind="$(echo $BACKUPNAME | cut -c1-6)*$nonce$extension"
 
 #[ -f "$LOCKFILE" ] && exit
 if [ -f "$LOCKFILE" ]; then
@@ -46,6 +49,8 @@ touch $LOCKFILE
 touch $EMAILFILE
 
 start=`date +%s`
+
+echo "$(date) - INFO - The backup process ($BACKUPNAME) has being started." >> $logfile
 
 # Random password generator. 48 is a password lenght 
 pass="$(gpg --armor --gen-random 1 48)"
@@ -70,17 +75,27 @@ excludeFromBackup="--exclude=$WORKINGDIR\
  --exclude=/home/*/.local/share/Trash\"
 
 # Do System backup
-tar -cvp $excludeFromBackup --one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2>>$LOCKFILE
+tar -cvp $excludeFromBackup --one-file-system / | gpg --passphrase "$pass" --symmetric --no-tty -o $BACKUPNAME 2 >> $LOCKFILE
 
 middle=`date +%s`
 
 #Upload backup to Mega
-megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+#megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME 2>>$LOCKFILE
+upload_command="megaput -u $megalogin -p $megapass --path /Root/Backup $BACKUPNAME"
+
+NEXT_WAIT_TIME=10
+until upload_command || [ $NEXT_WAIT_TIME -eq 4 ]; do
+   sleep $(( NEXT_WAIT_TIME++ ))
+   echo "$(date) - ERROR - Mega Upload was failed, will retry after 10 seconds ($BACKUPNAME)." >> $logfile
+done
 
 #delete local old backups
 # +45 is older than 45 days - basically any other backup.
 find "$ToFind" -mtime +45 -exec rm {} \; 2>>$LOCKFILE
 #find backup*gpg -mtime +45 -exec rm {} \; 2>>$LOCKFILE
+
+#put collected data into logfile
+[ -s $LOCKFILE ] && cat $LOCKFILE) >> $logfile
 
 end=`date +%s`
 
@@ -106,7 +121,7 @@ sha=$(sha256sum $BACKUPNAME | awk '{printf "%s",$1}' | tr 'a-z' 'A-Z')
 echo "SHA256 of backup file: $sha.<br>" >> $EMAILFILE
 echo "<br>">> $EMAILFILE
 echo "Space information: $(megadf -u $megalogin -p $megapass -h).<br>" >> $EMAILFILE
-[ -s file.name ] && echo "Other info: $(cat $LOCKFILE).<br>" >> $EMAILFILE
+[ -s $LOCKFILE ] && echo "Other info: $(cat $LOCKFILE).<br>" >> $EMAILFILE
 #echo "<br>">> $EMAILFILE
 
 #send email with password
