@@ -46,7 +46,9 @@ Lets go through what it does (valid for [commit 44d9d2f](https://github.com/GAS8
 
 > CRONLOGFILE=/var/log/next-cron.log   **<--  location for bash log. In case when there is an output by command generated. AND IT IS GENERATED...**
 
-Line 22 will generate NC log input. You will see it in a GUI as:![](https://help.nextcloud.com/uploads/default/original/2X/e/ebd7635c409b67d3ee0144246e4ca93f2363540a.png)
+
+Line 22 will generate NC log input. You will see it in a GUI as:
+![](https://help.nextcloud.com/uploads/default/original/2X/e/ebd7635c409b67d3ee0144246e4ca93f2363540a.png)
 
 From the line 26 starts the job, basically it is left from an older version of script and it is exactly what you done - scan all users, all shares, all locals with all folders. It takes ages to perform an a big installations, so I commented it.
 
