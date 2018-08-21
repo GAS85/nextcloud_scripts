@@ -37,13 +37,16 @@ Here I add _perl -e 'sleep int(rand(1800))'_ to inject some random start time wi
 Lets go through what it does (valid for [commit 44d9d2f](https://github.com/GAS85/nextcloud_scripts/commit/44d9d2ffe1153130560c8039e1299483bc2a36a5)):
 
 > COMMAND=/var/www/nextcloud/occ   **<--  This is where your nextcloud OCC command located**
+
 > OPTIONS="files:scan"   **<--  This is "Command" to run, _just live it as it is_**
+
 > LOCKFILE=/tmp/nextcloud_file_scan   **<--  Lock file to not execute script twice, if already ongoing**
+
 > LOGFILE=/var/www/nextcloud/data/nextcloud.log    **<--  Location of Nextcloud LOG file, will put some logs in Nextcloud format**
+
 > CRONLOGFILE=/var/log/next-cron.log   **<--  location for bash log. In case when there is an output by command generated. AND IT IS GENERATED...**
 
-Line 22 will generate NC log input. You will see it in a GUI as:
-![image|447x41](upload://xElFH2K4QSiZSfGC5YcQMTCqubU.png)
+Line 22 will generate NC log input. You will see it in a GUI as:![](https://help.nextcloud.com/uploads/default/original/2X/e/ebd7635c409b67d3ee0144246e4ca93f2363540a.png)
 
 From the line 26 starts the job, basically it is left from an older version of script and it is exactly what you done - scan all users, all shares, all locals with all folders. It takes ages to perform an a big installations, so I commented it.
 
@@ -64,6 +67,6 @@ and output:
 Those lines will be read one by one and synced in line 49.
 
 After this script will generate NC log output:
-![image|601x123](upload://rmoeySmlAnlHKKLHU3a8pBOwLHO.png)
+![](https://help.nextcloud.com/uploads/default/original/2X/b/bfc2a6ad6de3d7af5d287776e87ffbcd5d6fcc18.png)
 
 I have had some issues (like described here https://help.nextcloud.com/t/occ-files-cleanup-does-it-delete-the-db-table-entries-of-the-missing-files/20253) in older NC versions, so I added workaround from line 60 till 67 as `files:cleanup` command, nut sure if it is needed now, but it does not harm anything.
