@@ -17,8 +17,10 @@ LOGFILE=/var/www/nextcloud/data/nextcloud.log
 CRONLOGFILE=/var/log/next-cron.log
 	# If you want to perform cache cleanup, please change CACHE value to 1
 CACHE=0
+	# Your PHP location
+PHP=/usr/bin/php
 
-
+###################
 # Live it like this
 OPTIONS="files:scan"
 LOCKFILE=/tmp/nextcloud_file_scan
@@ -37,7 +39,7 @@ if [ ! -x "$COMMAND" ]; then
 fi
 
 # Check if php is executable
-if [ ! -x php ]; then
+if [ ! -x "$PHP" ]; then
 	echo "ERROR - PHP not found."
 	exit 1
 fi
@@ -62,11 +64,11 @@ date >> $CRONLOGFILE
 # scan all files of all users (Takes ages)
 
 if [ "$KEY" == "-all" ]; then
-	php $COMMAND $OPTIONS --all >> $CRONLOGFILE
+	$PHP $COMMAND $OPTIONS --all >> $CRONLOGFILE
 fi
 
 # scan all files of selected users
-#php $COMMAND $OPTIONS [user_id] >> $CRONLOGFILE
+#$PHP $COMMAND $OPTIONS [user_id] >> $CRONLOGFILE
 # e.g. php $COMMAND $OPTIONS user1 >> $CRONLOGFILE
 
 
@@ -81,10 +83,10 @@ fi
 
 if [ "$KEY" != "-all" ]; then
 	# get ALL external mounting points and users
-	php $COMMAND files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}' > $LOCKFILE
+	$PHP $COMMAND files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}' > $LOCKFILE
 		
 	# rescan all shares
-	cat $LOCKFILE | while read line ; do php $COMMAND $OPTIONS --path="$line" >> $CRONLOGFILE ; done
+	cat $LOCKFILE | while read line ; do $PHP $COMMAND $OPTIONS --path="$line" >> $CRONLOGFILE ; done
 fi
 
 end=`date +%s`
@@ -97,7 +99,7 @@ if [ "$CACHE" -eq "1" ]; then
 	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Files Cache cleanup +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 start=`date +%s`
 	date >> $CRONLOGFILE
-	php $COMMAND files:cleanup >> $CRONLOGFILE
+	$PHP $COMMAND files:cleanup >> $CRONLOGFILE
 	end=`date +%s`
 	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Files Cache cleanup Completed. Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 fi
