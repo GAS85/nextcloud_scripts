@@ -19,6 +19,7 @@ output felds are:
     
 # nextcloud-file-sync.sh
 Basically it works out from the box. Only that you have to check you nextcloud path, log path and create a log file for `php occ` output.
+Will do external ONLY shares rescan for nextcloud.
 
 I put it in
 
@@ -33,6 +34,10 @@ I run it under _nextcloud user_ (for me it is www-data) basically twice per day 
 Here I add _perl -e 'sleep int(rand(1800))'_ to inject some random start time within 30 Minutes, but since it scans externals only it is not necessary any more. Your cron job config to run it hourly could be:
 
     * */1 * * * /usr/local/bin/nextcloud-file-sync.sh
+
+_If you would like to perform WHOLE nextcloud rescan, please add -all to command, e.g.:_
+
+> ./nextcloud-file-sync.sh -all
 
 Lets go through what it does (valid for [commit 44d9d2f](https://github.com/GAS85/nextcloud_scripts/commit/44d9d2ffe1153130560c8039e1299483bc2a36a5)):
 
