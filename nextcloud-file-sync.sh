@@ -3,8 +3,8 @@
 # By Georgiy Sitnikov.
 #
 # Will do external ONLY shares rescan for nextcloud and put execution information in NC log.
-# If you would like to perform WHOLE nextcloud rescan, please add -all to command, e.g.:
-# ./nextcloud-file-sync.sh -all
+# If you would like to perform WHOLE nextcloud rescan, please add --all to command, e.g.:
+# ./nextcloud-file-sync.sh --all
 #
 # AS-IS without any warranty
 
@@ -20,7 +20,7 @@ CACHE=0
 	# Your PHP location
 PHP=/usr/bin/php
 
-###################
+
 # Live it like this
 OPTIONS="files:scan"
 LOCKFILE=/tmp/nextcloud_file_scan
@@ -33,39 +33,46 @@ if [ -f "$LOCKFILE" ]; then
 fi
 
 # Check if OCC is reacheble
-if [ ! -x "$COMMAND" ]; then
-	echo "ERROR - Command $COMMAND not found. Make sure if path is corrct and user has right to execute it."
+if [ ! -w "$COMMAND" ]; then
+	echo "ERROR - Command $COMMAND not found. Make sure taht path is corrct."
 	exit 1
+else
+	if [ "$EUID" -ne "$(stat -c %u $COMMAND)" ]; then
+		echo "ERROR - Command $COMMAND not executable for current user.
+	Make sure that user has right to execute it.
+	Script must be executed as $(stat -c %U $COMMAND)."
+		exit 1
+	fi
 fi
 
 # Check if php is executable
 if [ ! -x "$PHP" ]; then
-	echo "ERROR - PHP not found."
+	echo "ERROR - PHP not found, or not executable."
 	exit 1
 fi
 
 # Check if NC Log file is writable
 if [ ! -w "$LOGFILE" ]; then
-	echo "WARNING - could not write to Log file $LOGFILE, will drop log messages. Is User Correct?"
+	echo "WARNING - could not write to Log file $LOGFILE, will drop log messages. Is User Correct? Current log file owener is $(stat -c %U $LOGFILE)"
 	LOGFILE=/dev/null
 fi
 
 # Check if CRON Log file is writable
 if [ ! -w "$CRONLOGFILE" ]; then
-	echo "WARNING - could not write to Log file $CRONLOGFILE, will drop log messages. Is User Correct?"
+	echo "WARNING - could not write to Log file $CRONLOGFILE, will drop log messages. Is User Correct? Current log file owener is $(stat -c %U $CRONLOGFILE)"
 	CRONLOGFILE=/dev/null
 fi
 
+# Put output to Logfile and Errors to Lockfile as per https://stackoverflow.com/questions/18460186/writing-outputs-to-log-file-and-console
+exec 3>&1 1>>${CRONLOGFILE} 2>>${CRONLOGFILE}
+
 touch $LOCKFILE
+
 echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Filescan +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+
 start=`date +%s`
+
 date >> $CRONLOGFILE
-
-# scan all files of all users (Takes ages)
-
-if [ "$KEY" == "-all" ]; then
-	$PHP $COMMAND $OPTIONS --all >> $CRONLOGFILE
-fi
 
 # scan all files of selected users
 #$PHP $COMMAND $OPTIONS [user_id] >> $CRONLOGFILE
@@ -81,15 +88,21 @@ fi
 #   or
 # "user_id/files/mount_name/path"
 
-if [ "$KEY" != "-all" ]; then
+if [ "$KEY" != "--all" ]; then
 	# get ALL external mounting points and users
 	$PHP $COMMAND files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}' > $LOCKFILE
 		
 	# rescan all shares
-	cat $LOCKFILE | while read line ; do $PHP $COMMAND $OPTIONS --path="$line" >> $CRONLOGFILE ; done
+	cat $LOCKFILE | while read line ; do $PHP $COMMAND $OPTIONS --path="$line"; done
+else
+	# scan all files of all users (Takes ages)
+	if [ "$KEY" == "--all" ]; then
+		$PHP $COMMAND $OPTIONS --all
+	fi
 fi
 
 end=`date +%s`
+
 echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Filescan Completed.    Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 # OPTIONAL
@@ -97,7 +110,7 @@ echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Filescan Completed.
 
 if [ "$CACHE" -eq "1" ]; then
 	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Files Cache cleanup +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
-start=`date +%s`
+	start=`date +%s`
 	date >> $CRONLOGFILE
 	$PHP $COMMAND files:cleanup >> $CRONLOGFILE
 	end=`date +%s`
@@ -105,6 +118,6 @@ start=`date +%s`
 fi
 ### FINISCH Cache cleanup
 
-#echo -------------------------------------------------- >> $LOGFILE
 rm $LOCKFILE
+
 exit 0
