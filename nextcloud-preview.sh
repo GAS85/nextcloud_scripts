@@ -17,8 +17,11 @@ OPTIONS="preview:pre-generate"
 # Path to NC log file
 LOGFILE=/var/www/nextcloud/data/nextcloud.log
 
+# Optional:
 # Path to log file for this script
 CRONLOGFILE=/var/log/next-cron.log
+
+### Please do not touch under this line ###
 
 LOCKFILE=/tmp/nextcloud_preview
 
@@ -31,6 +34,11 @@ fi
 
 touch $LOCKFILE
 
+if [ ! -f "$CRONLOGFILE" ]; then
+	# Redirect output if $CRONLOGFILE not found
+	CRONLOGFILE="/dev/null"
+fi
+
 echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Preview generation +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 start=`date +%s`
 date >> $CRONLOGFILE
@@ -38,7 +46,7 @@ date >> $CRONLOGFILE
 php $COMMAND $OPTIONS $DEBUG >> $CRONLOGFILE
 
 end=`date +%s`
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Preview generation Completed.    Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Preview generation Completed. Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 rm $LOCKFILE
 
