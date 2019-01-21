@@ -2,7 +2,7 @@
 
 # By Georgiy Sitnikov.
 #
-# Will do NC backup and upload to remote server via SSH with key authentication.
+# Will do NC backup and it upload to remote server via SSH with key authentication
 #
 # AS-IS without any warranty
 
@@ -33,7 +33,7 @@ CompressToArchive=false
 WhereToMount=/mnt/remoteSystem # Needs to be set if CompressToArchive is true
 RemoteArchiveName=backup.tar.gz # Needs to be set if CompressToArchive is true
 
-#########
+##############################################################################
 
 InstallerCheck () {
 	# Check if all Programms are installed
@@ -81,7 +81,12 @@ if [ "$CompressToArchive" == true ]; then
 
 	else
 
+		InstallerCheck tar
+
 		echo Put NC into Archive
+		echo "Will create Archive under $WhereToMount"
+		echo "With name nextcloudBackup-$(date +"%Y-%m-%d_%T")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).tar.gz"
+
 		tar -cvpf $excludeFromBackup --one-file-system $NextCloudPath $WhereToMount/nextcloudBackup-$(date +"%Y-%m-%d_%T")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).tar.gz
 
 	fi
@@ -103,4 +108,5 @@ else
 fi
 
 echo Ready.
+
 exit 0
