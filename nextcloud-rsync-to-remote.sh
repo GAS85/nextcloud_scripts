@@ -24,9 +24,7 @@ NextCloudPath=/var/www/nextcloud
 
 excludeFromBackup="--exclude=data/updater*\
  --exclude=*.ocTransferId*.part\
- --exclude=data/appdata*/preview\
- --exclude=data/*/files_trashbin/\
- --exclude=data/*/files_versions/"
+ --exclude=data/appdata*/preview"
 
 # Compress to needs to have archivemount and sshfs installed.
 CompressToArchive=false
@@ -46,7 +44,8 @@ InstallerCheck () {
 # Fetch data directory place from the config file
 DataDirectory=$(grep datadirectory $NextCloudPath/config/config.php | cut -d "'" -f4)
 
-RsyncOptions="-aP --no-o --no-g --delete"
+RsyncOptions="-a --partial --info=progress2 --no-o --no-g --delete"
+#RsyncOptions="-aP --info=progress2 --no-o --no-g --delete"
 
 InstallerCheck rsync
 
@@ -102,8 +101,8 @@ else
 	echo Run Rsync of NC root folder.
 	rsync $RsyncOptions --exclude=data --exclude=$DataDirectory -e "ssh -i $SSHIdentityFile" $NextCloudPath $SSHUser@$RemoteAddr:$RemoteBackupFolder/nextcloud/
 
-	echo Run Rsync of NC Data folder.
-	rsync $RsyncOptions $excludeFromBackup -e "ssh -i $SSHIdentityFile" $NextCloudPath $SSHUser@$RemoteAddr:$RemoteBackupFolder/nextcloud/
+	echo Run Rsync of NC Data folder (found under $DataDirectory).
+	rsync $RsyncOptions $excludeFromBackup -e "ssh -i $SSHIdentityFile" $DataDirectory $SSHUser@$RemoteAddr:$RemoteBackupFolder/nextcloud/
 
 fi
 
