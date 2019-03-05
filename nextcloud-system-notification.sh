@@ -12,6 +12,8 @@ USER="admin"
 COMMAND=/var/www/nextcloud/occ
 	# Your PHP location
 PHP=/usr/bin/php
+	# Path to NC log file
+LOGFILE=/var/www/nextcloud/data/nextcloud.log
 
 ################
 
@@ -34,6 +36,12 @@ if [ ! -x "$PHP" ]; then
 	exit 1
 fi
 
+# Check if NC Log file is writable
+if [ ! -w "$LOGFILE" ]; then
+	echo "WARNING - could not write to Log file $LOGFILE, will drop log messages. Is User Correct? Current log file owener is $(stat -c %U $LOGFILE)"
+	LOGFILE=/dev/null
+fi
+
 #PACKAGES=$(apt list --upgradable 2>&1)
 PACKAGESRAW=$(apt-get -s dist-upgrade | awk '/^Inst/ { print $2 }' 2>&1)
 NUM_PACKAGES=$(echo "$PACKAGESRAW" | wc -l)
@@ -43,7 +51,7 @@ if [ "$PACKAGES" != "" ]; then
 
 	UPDATE_MESSAGE=$(echo "Packages to update: $PACKAGES" | sed -r ':a;N;$!ba;s/\n/, /g')
 	$PHP $COMMAND notification:generate $USER "$NUM_PACKAGES packages require to be updated" -l "$UPDATE_MESSAGE"
-#	echo $NUM_PACKAGES $UPDATE_MESSAGE
+	echo \{\"app\":\"Notification\",\"message\":\""+++ $NUM_PACKAGES packages require to be updated. $UPDATE_MESSAGE +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 elif [ -f /var/run/reboot-required ]; then
 
