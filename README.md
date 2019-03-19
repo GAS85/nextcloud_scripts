@@ -10,13 +10,17 @@ for Apache A+ SSL configuration check https://gist.github.com/GAS85/42a5469b3265
 - [nextcloud-system-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-system-notificationsh)
 - [nextcloud-usage-report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage-reportsh)
 
+---
+
 ### nextcloud-scripts-config.conf
 Central configuration file, very handy if you are using more then one script from this banch. Options are:
 
-- Your NC OCC Command path e.g. COMMAND=/var/www/nextcloud/occ
-- Your NC log file path e.g. LOGFILE=/var/www/nextcloud/data/nextcloud.log
-- Your log file path for other output if needed e.g. CRONLOGFILE=/var/log/next-cron.log
-- Your PHP location if different from default e.g. PHP=/usr/bin/php
+- Your NC OCC Command path e.g. `COMMAND=/var/www/nextcloud/occ`
+- Your NC log file path e.g. `LOGFILE=/var/www/nextcloud/data/nextcloud.log`
+- Your log file path for other output if needed e.g. `CRONLOGFILE=/var/log/next-cron.log`
+- Your PHP location if different from default e.g. `PHP=/usr/bin/php`
+
+---
 
 ### nextcloud-file-sync.sh
 Basically it works out from the box. Only that you have to check you nextcloud path, log path and create a log file for `php occ` output.
@@ -79,6 +83,8 @@ After this script will generate NC log output:
 
 I have had some issues (like described here https://help.nextcloud.com/t/occ-files-cleanup-does-it-delete-the-db-table-entries-of-the-missing-files/20253) in older NC versions, so I added workaround from line 60 till 67 as `files:cleanup` command, nut sure if it is needed now, but it does not harm anything.
 
+---
+
 ### nextcloud-preview.sh
 Since last update, Application will detect if it is aready runned and will not be executed twice/parallel (https://help.nextcloud.com/t/clarity-on-the-crontab-settings-for-the-preview-generator-app/6144/54), so you can added it e.g. to execute each 20 Minutes as cron job directly. This means that nextcloud-preview.sh is not needed anymore, _only make sense if you would like to have execution information directly in nextcloud logs_.
 
@@ -86,13 +92,28 @@ This script will generate NC log output:
 
 ![](https://help.nextcloud.com/uploads/default/original/2X/7/7a6efcf4700e06457f9bf0eab634eb9f4e012943.png)
 
-### nextcloud-rsync-to-remote.sh
+---
 
-tbd
+### nextcloud-rsync-to-remote.sh
+This script will do backup via  RSYNC to remote mashine via SSH Key authentication. You can edit key `--exclude=FolderToExclude` to exclude folders such as:
+ - `data/appdata*/preview` exclude Previews - they could be newle generated,
+ - `data/*/files_trashbin/` exclude users trashbins,
+ - `data/*/files_versions/` exclude users files Versions,
+ - `data/updater*` exclude updater backups and downloads,
+ - `*.ocTransferId*.part` exclude partly uploaded data from backup.
+
+Or you can even combine and do rsync into archive (with remote authentication via SSH Key) if you set `CompressToArchive=true`
+
+---
 
 ### nextcloud-system-notification.sh
+As per [this](https://help.nextcloud.com/t/howto-get-notifications-for-system-updates/10299) tread I added simple script that will do check if updates or reboot is requered and show it as NC notification. Works on Ubuntu 16.04+.
 
-tbd
+![](https://help.nextcloud.com/uploads/default/original/2X/9/96a5632b82ecdc46251cc4b42cad8be36086b518.png)
+
+You only have to specify user from the Administrator group to get notifications via  `USER="admin"`
+
+---
 
 ### nextcloud-usage-report.sh
 This script works with https://apps.nextcloud.com/apps/user_usage_report
