@@ -20,6 +20,7 @@ CACHE=0
 	# Your PHP location
 PHP=/usr/bin/php
 
+. nextcloud-scripts-config.conf
 
 # Live it like this
 OPTIONS="files:scan"
