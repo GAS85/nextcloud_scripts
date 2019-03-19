@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Path to your occ command.
-# E.g. /var/www/nextcloud/occ
-COMMAND=/var/www/nextcloud/occ
-
 # # Possible options:
 #  preview:pre-generate - to generate preview to all NEW files
 #  preview:generate-all - to rescan whole system and generate previews 
@@ -13,6 +9,10 @@ OPTIONS="preview:pre-generate"
 # # use to see all touched files
 # Possible values (e.g. Debug level) -v, -vv, -vvv.
 #DEBUG="-vvv"
+
+# Path to your occ command.
+# E.g. /var/www/nextcloud/occ
+COMMAND=/var/www/nextcloud/occ
 
 # Path to NC log file
 LOGFILE=/var/www/nextcloud/data/nextcloud.log
@@ -25,6 +25,8 @@ CRONLOGFILE=/var/log/next-cron.log
 PHP=/usr/bin/php
 
 ### Please do not touch under this line ###
+
+. nextcloud-scripts-config.conf
 
 LOCKFILE=/tmp/nextcloud_preview
 
