@@ -17,6 +17,8 @@ LOGFILE=/var/www/nextcloud/data/nextcloud.log
 
 ################
 
+. nextcloud-scripts-config.conf
+
 # Check if OCC is reacheble
 if [ ! -w "$COMMAND" ]; then
 	echo "ERROR - Command $COMMAND not found. Make sure taht path is corrct."
