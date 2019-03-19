@@ -3,13 +3,22 @@
 for Apache A+ SSL configuration check https://gist.github.com/GAS85/42a5469b32659a0aecc60fa2d4990308
 
 ## Table of content:
+- [nextcloud-scripts-config.conf](https://github.com/GAS85/nextcloud_scripts#nextcloud-scripts-configconf)
 - [nextcloud-file-sync.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh)
 - [nextcloud-preview.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-previewsh)
 - [nextcloud-rsync-to-remote.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-rsync-to-remotesh)
 - [nextcloud-system-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-system-notificationsh)
-- [nextcloud-usage_report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage_reportsh)
+- [nextcloud-usage-report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage-reportsh)
 
-# nextcloud-file-sync.sh
+### nextcloud-scripts-config.conf
+Central configuration file, very handy if you are using more then one script from this banch. Options are:
+
+- Your NC OCC Command path e.g. COMMAND=/var/www/nextcloud/occ
+- Your NC log file path e.g. LOGFILE=/var/www/nextcloud/data/nextcloud.log
+- Your log file path for other output if needed e.g. CRONLOGFILE=/var/log/next-cron.log
+- Your PHP location if different from default e.g. PHP=/usr/bin/php
+
+### nextcloud-file-sync.sh
 Basically it works out from the box. Only that you have to check you nextcloud path, log path and create a log file for `php occ` output.
 Will do external ONLY shares rescan for nextcloud.
 
@@ -85,7 +94,7 @@ tbd
 
 tbd
 
-### nextcloud-usage_report.sh
+### nextcloud-usage-report.sh
 This script works with https://apps.nextcloud.com/apps/user_usage_report
 
 Will generate report and output it in cacti format
