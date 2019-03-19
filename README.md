@@ -1,26 +1,14 @@
 # nextcloud_scripts
 
-for Apache SSL configuration check https://gist.github.com/GAS85/42a5469b32659a0aecc60fa2d4990308
+for Apache A+ SSL configuration check https://gist.github.com/GAS85/42a5469b32659a0aecc60fa2d4990308
 
-# nextcloud-preview.sh
-since last update, Application will detect if it is aready runned and will not be executed twice/parallel (https://help.nextcloud.com/t/clarity-on-the-crontab-settings-for-the-preview-generator-app/6144/54), so you can added it e.g. to execute each 20 Minutes as cron job directly. This means that nextcloud-preview.sh is not needed anymore, _only make sense if you would like to have execution information directly in nextcloud logs_.
+## Table of content:
+- [nextcloud-file-sync.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh)
+- [nextcloud-preview.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-previewsh)
+- [nextcloud-rsync-to-remote.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-rsync-to-remotesh)
+- [nextcloud-system-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-system-notificationsh)
+- [nextcloud-usage_report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage_reportsh)
 
-This script will generate NC log output:
-
-![](https://help.nextcloud.com/uploads/default/original/2X/7/7a6efcf4700e06457f9bf0eab634eb9f4e012943.png)
-
-# nextcloud-usage_report.sh
-This script works with https://apps.nextcloud.com/apps/user_usage_report
-
-Will generate report and output it in cacti format
-Supports Argument as _"user"_ if you need to check statistic for one user only
-run _./nextcloud-usage_report.sh user_ to get specific user information
-AS-IS without any warranty
-
-output felds are:
-
-    storage_all, storage_used, shares_new, files_all, files_new, files_read
-    
 # nextcloud-file-sync.sh
 Basically it works out from the box. Only that you have to check you nextcloud path, log path and create a log file for `php occ` output.
 Will do external ONLY shares rescan for nextcloud.
@@ -81,3 +69,31 @@ After this script will generate NC log output:
 ![](https://help.nextcloud.com/uploads/default/original/2X/b/bfc2a6ad6de3d7af5d287776e87ffbcd5d6fcc18.png)
 
 I have had some issues (like described here https://help.nextcloud.com/t/occ-files-cleanup-does-it-delete-the-db-table-entries-of-the-missing-files/20253) in older NC versions, so I added workaround from line 60 till 67 as `files:cleanup` command, nut sure if it is needed now, but it does not harm anything.
+
+### nextcloud-preview.sh
+Since last update, Application will detect if it is aready runned and will not be executed twice/parallel (https://help.nextcloud.com/t/clarity-on-the-crontab-settings-for-the-preview-generator-app/6144/54), so you can added it e.g. to execute each 20 Minutes as cron job directly. This means that nextcloud-preview.sh is not needed anymore, _only make sense if you would like to have execution information directly in nextcloud logs_.
+
+This script will generate NC log output:
+
+![](https://help.nextcloud.com/uploads/default/original/2X/7/7a6efcf4700e06457f9bf0eab634eb9f4e012943.png)
+
+### nextcloud-rsync-to-remote.sh
+
+tbd
+
+### nextcloud-system-notification.sh
+
+tbd
+
+### nextcloud-usage_report.sh
+This script works with https://apps.nextcloud.com/apps/user_usage_report
+
+Will generate report and output it in cacti format
+Supports Argument as _"user"_ if you need to check statistic for one user only
+run _./nextcloud-usage_report.sh user_ to get specific user information
+AS-IS without any warranty
+
+output felds are:
+
+    storage_all, storage_used, shares_new, files_all, files_new, files_read
+    
