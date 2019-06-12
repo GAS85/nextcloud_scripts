@@ -40,7 +40,7 @@ Here I add _perl -e 'sleep int(rand(1800))'_ to inject some random start time wi
 
     * */1 * * * /usr/local/bin/nextcloud-file-sync.sh
 
-_If you would like to perform WHOLE nextcloud rescan, please add -all to command, e.g.:_
+_If you would like to perform WHOLE nextcloud re-scan, please add -all to command, e.g.:_
 
 > ./nextcloud-file-sync.sh -all
 
@@ -64,7 +64,7 @@ From the line 26 starts the job, basically it is left from an older version of s
 
 Second option (line 31) is to scan for specific user, but as soon as I get more than one user with external shares it does not work also. Besides it is still scanning whole partition (local and remote) for specific user - commented.
 
-From line 35 till 42 comments how to not forget how I get users from the NC, basically everything is happens in line 45, scipt will generate exactly path for external shares to be updated for all users (you can run it and test output). Here an example command:
+From line 35 till 42 comments how to not forget how I get users from the NC, basically everything is happens in line 45, script will generate exactly path for external shares to be updated for all users (you can run it and test output). Here an example command:
 
     sudo -u www-data php occ files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}'
 
@@ -86,7 +86,7 @@ I have had some issues (like described here https://help.nextcloud.com/t/occ-fil
 ---
 
 ### nextcloud-preview.sh
-Since last update, Application will detect if it is aready runned and will not be executed twice/parallel (https://help.nextcloud.com/t/clarity-on-the-crontab-settings-for-the-preview-generator-app/6144/54), so you can added it e.g. to execute each 20 Minutes as cron job directly. This means that nextcloud-preview.sh is not needed anymore, _only make sense if you would like to have execution information directly in nextcloud logs_.
+Since last update, Application will detect if it is already run and will not be executed twice/parallel (https://help.nextcloud.com/t/clarity-on-the-crontab-settings-for-the-preview-generator-app/6144/54), so you can added it e.g. to execute each 20 Minutes as cron job directly. This means that nextcloud-preview.sh is not needed anymore, _only make sense if you would like to have execution information directly in nextcloud logs_.
 
 This script will generate NC log output:
 
@@ -95,9 +95,9 @@ This script will generate NC log output:
 ---
 
 ### nextcloud-rsync-to-remote.sh
-This script will do backup via  RSYNC to remote mashine via SSH Key authentication. You can edit key `--exclude=FolderToExclude` to exclude folders such as:
- - `data/appdata*/preview` exclude Previews - they could be newle generated,
- - `data/*/files_trashbin/` exclude users trashbins,
+This script will do backup via  RSYNC to remote machine via SSH Key authentication. You can edit key `--exclude=FolderToExclude` to exclude folders such as:
+ - `data/appdata*/preview` exclude Previews - they could be newly generated,
+ - `data/*/files_trashbin/` exclude users trash-bins,
  - `data/*/files_versions/` exclude users files Versions,
  - `data/updater*` exclude updater backups and downloads,
  - `*.ocTransferId*.part` exclude partly uploaded data from backup.
@@ -107,7 +107,7 @@ Or you can even combine and do rsync into archive (with remote authentication vi
 ---
 
 ### nextcloud-system-notification.sh
-As per [this](https://help.nextcloud.com/t/howto-get-notifications-for-system-updates/10299) tread I added simple script that will do check if updates or reboot is requered and show it as NC notification. Works on Ubuntu 16.04+.
+As per [this](https://help.nextcloud.com/t/howto-get-notifications-for-system-updates/10299) tread I added simple script that will do check if updates or reboot is required and show it as NC notification. Works on Ubuntu 16.04+.
 
 ![](https://help.nextcloud.com/uploads/default/original/2X/9/96a5632b82ecdc46251cc4b42cad8be36086b518.png)
 
@@ -123,7 +123,7 @@ Supports Argument as _"user"_ if you need to check statistic for one user only
 run _./nextcloud-usage_report.sh user_ to get specific user information
 AS-IS without any warranty
 
-output felds are:
+output fields are:
 
     storage_all, storage_used, shares_new, files_all, files_new, files_read
     
