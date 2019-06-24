@@ -26,6 +26,7 @@ PHP=/usr/bin/php
 OPTIONS="files:scan"
 LOCKFILE=/tmp/nextcloud_file_scan
 KEY="$1"
+SECONDS=0
 
 if [ -f "$LOCKFILE" ]; then
 	# Remove lock file if script fails last time and did not run longer than 10 days due to lock file.
@@ -71,8 +72,6 @@ touch $LOCKFILE
 
 echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Filescan +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
-start=`date +%s`
-
 date >> $CRONLOGFILE
 
 # scan all files of selected users
@@ -102,20 +101,20 @@ else
 	fi
 fi
 
-end=`date +%s`
+duration=$SECONDS
 
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Filescan Completed.    Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Filescan Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 # OPTIONAL
 ### Start Cache cleanup
 
 if [ "$CACHE" -eq "1" ]; then
 	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Files Cache cleanup +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
-	start=`date +%s`
+	SECONDS=0
 	date >> $CRONLOGFILE
 	$PHP $COMMAND files:cleanup >> $CRONLOGFILE
-	end=`date +%s`
-	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Files Cache cleanup Completed. Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+	duration=$SECONDS
+	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Files Cache cleanup Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 fi
 ### FINISCH Cache cleanup
 
