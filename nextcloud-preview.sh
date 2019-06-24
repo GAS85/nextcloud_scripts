@@ -29,6 +29,7 @@ PHP=/usr/bin/php
 . nextcloud-scripts-config.conf
 
 LOCKFILE=/tmp/nextcloud_preview
+SECONDS=0
 
 if [ -f "$LOCKFILE" ]; then
 	# Remove lock file if script fails last time and did not run more then 10 days due to lock file.
@@ -71,13 +72,12 @@ fi
 touch $LOCKFILE
 
 echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Preview generation +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
-start=`date +%s`
 date >> $CRONLOGFILE
 
 $PHP $COMMAND $OPTIONS $DEBUG >> $CRONLOGFILE
 
-end=`date +%s`
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Preview generation Completed. Time: `expr $end - $start`s +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+duration=$SECONDS
+echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Preview generation Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 rm $LOCKFILE
 
