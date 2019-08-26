@@ -47,6 +47,16 @@ else
 	fi
 fi
 
+# Fetch data directory and logs place from the config file
+ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')/config/config.php
+DataDirectory=$(grep datadirectory $ConfigDirectory | cut -d "'" -f4)
+LogFilePath=$(grep logfile $ConfigDirectory | cut -d "'" -f4)
+if [ LogFilePath = "" ]; then
+	LOGFILE=$DataDirectory/nextcloud.log
+else
+	LOGFILE=$LogFilePath
+fi
+
 # Check if php is executable
 if [ ! -x "$PHP" ]; then
 	echo "ERROR - PHP not found, or not executable."
