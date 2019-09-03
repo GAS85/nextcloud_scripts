@@ -58,6 +58,7 @@ fi
 PACKAGESRAW=$(apt-get -s dist-upgrade | awk '/^Inst/ { print $2 }' 2>&1)
 NUM_PACKAGES=$(echo "$PACKAGESRAW" | wc -l)
 PACKAGES=$(echo "$PACKAGESRAW"|xargs)
+READOnlyDev=$(mount | grep "/dev" | grep '(ro,' | wc -l)
 
 if [ "$PACKAGES" != "" ]; then
 
@@ -68,6 +69,10 @@ if [ "$PACKAGES" != "" ]; then
 elif [ -f /var/run/reboot-required ]; then
 
 	$PHP $COMMAND notification:generate $USER "System requires a reboot"
+
+elif [ "$READOnlyDev" -gt 0 ]; then
+
+	$PHP $COMMAND notification:generate $USER "WARNING! Some of your Partitions are in Read Only mode!"
 
 fi
 
