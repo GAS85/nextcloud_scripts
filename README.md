@@ -1,6 +1,7 @@
 # nextcloud_scripts
 
-for Apache A+ SSL configuration check https://gist.github.com/GAS85/42a5469b32659a0aecc60fa2d4990308
+* for Apache A+ SSL configuration check https://gist.github.com/GAS85/42a5469b32659a0aecc60fa2d4990308
+* for Apache HTTP2 enablement check https://gist.github.com/GAS85/8dadbcb3c9a7ecbcb6705530c1252831
 
 ## Table of content:
 - [nextcloud-scripts-config.conf](https://github.com/GAS85/nextcloud_scripts#nextcloud-scripts-configconf) - Configuration file
