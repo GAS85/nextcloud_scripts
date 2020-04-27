@@ -23,7 +23,7 @@ while test $# -gt 0; do
 esac
 done
 
-list="/usr/local/bin/nextcloud_links_list"
+list="/usr/local/bin/nextcloud-bot-links-list"
 
 echo "Hey, "$3" here is something useful for you:"
 if [ "$1" = "" ]; then
