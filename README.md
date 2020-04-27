@@ -4,10 +4,12 @@
 * for Apache HTTP2 enablement check https://gist.github.com/GAS85/8dadbcb3c9a7ecbcb6705530c1252831
 
 ## Table of content:
-- [nextcloud-scripts-config.conf](https://github.com/GAS85/nextcloud_scripts#nextcloud-scripts-configconf) - Configuration file
 - [nextcloud-file-sync.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh) - Do External Shares rescan only
+- [nextcloud-links-list](https://github.com/GAS85/nextcloud_scripts#nextcloud-links-list) - List for a Links Nextcloud Talk bot
+- [nextcloud-links.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-linkssh) - Links Nextcloud Talk bot
 - [nextcloud-preview.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-previewsh) - Automate preview generation
 - [nextcloud-rsync-to-remote.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-rsync-to-remotesh) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
+- [nextcloud-scripts-config.conf](https://github.com/GAS85/nextcloud_scripts#nextcloud-scripts-configconf) - Configuration file
 - [nextcloud-system-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-system-notificationsh) - Get System Notifications into Nextcloud
 - [nextcloud-usage-report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage-reportsh) - Generate report in cacti format
 
@@ -101,3 +103,25 @@ Will generate report and output it in cacti format. Supports Argument as _"user"
 AS-IS without any warranty. Output fields are:
 
     storage_all, storage_used, shares_new, files_all, files_new, files_read
+
+---
+
+### nextcloud-links.sh
+This script work as a Talk Chat bot. Will return you usefull links specifyed in 'nextcloud-links-list'. To added bot simply execute:
+
+    sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud_links.sh {ARGUMENTS} {ROOM} {USER}" 2 3
+
+More information is about under https://nextcloud-talk.readthedocs.io/en/latest/commands/
+
+In a code, please specify absolute link to the 'nextcloud-links-list' as 'list', e.g.:
+
+    list="/usr/local/bin/nextcloud_links_list"
+
+Known Bug/Feature: it will return all lines with matched words, e.g. if you are typing '/links Your', you will get whole list from example below.
+
+### nextcloud-links-list
+This is a list of usefull Links or other infor for a Talk Chat bot. Simply one line per output. E.g.:
+
+    Your wiki is under https://domain/wiki
+    Your git is under https://domain/git
+    Your notes are under https://domain/index.php/apps/notes
