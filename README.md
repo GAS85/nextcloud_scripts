@@ -113,11 +113,11 @@ This script work as a Talk Chat bot. Will return you usefull links specifyed in 
 
 More information is about under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
-In a code, please specify absolute link to the 'nextcloud-links-list' as 'list', e.g.:
+In a code, please specify absolute link to the `nextcloud-links-list` as `list`, e.g.:
 
     list="/usr/local/bin/nextcloud_links_list"
 
-Known Bug/Feature: it will return all lines with matched words, e.g. if you are typing '/links Your', you will get whole list from example below.
+Known Bug/Feature: it will return all lines with matched words, e.g. if you are typing `/links Your`, you will get whole list from example below.
 
 ### nextcloud-links-list
 This is a list of usefull Links or other infor for a Talk Chat bot. Simply one line per output. E.g.:
