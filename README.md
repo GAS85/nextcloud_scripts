@@ -159,7 +159,7 @@ To add bot simply execute:
 
     sudo -u www-data php /var/www/nextcloud/occ talk:command:add pass pass "/usr/local/bin/nextcloud-bot-rate-1-10.sh {ARGUMENTS}" 1 3
 
-Please make sure that you put 1, this will ensure that only requester will see the output. For more information please follow https://nextcloud-talk.readthedocs.io/en/latest/commands/
+Please make sure that you put 1 as `response` argument, this will ensure that only requester can see the output. For more information please follow https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
 Output example:
 
