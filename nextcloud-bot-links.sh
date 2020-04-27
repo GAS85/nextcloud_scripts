@@ -25,7 +25,7 @@ done
 
 list="/usr/local/bin/nextcloud-bot-links-list"
 
-echo "Hey, "$3" here is something useful for you:"
+echo "Hey, "$2" here is something useful for you:"
 if [ "$1" = "" ]; then
 	#will display whole list because nothing specifyed
 	cat $list
