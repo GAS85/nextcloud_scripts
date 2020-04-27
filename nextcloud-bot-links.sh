@@ -5,10 +5,8 @@
 # AS-IS without any warranty
 # 
 # To added to Nextcloud please execute:
-# sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud_links.sh {ARGUMENTS} {ROOM} {USER}" 2 3
+# sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud_links.sh {ARGUMENTS} {USER}" 2 3
 # More infor under https://nextcloud-talk.readthedocs.io/en/latest/commands/
-
-list="/usr/local/bin/nextcloud_links_list"
 
 while test $# -gt 0; do
 	case "$1" in
@@ -25,7 +23,9 @@ while test $# -gt 0; do
 esac
 done
 
-echo "Hey, "$3" here is something useful for you:"
+list="/usr/local/bin/nextcloud-bot-links-list"
+
+echo "Hey, "$2" here is something useful for you:"
 if [ "$1" = "" ]; then
 	#will display whole list because nothing specifyed
 	cat $list

@@ -5,13 +5,16 @@
 
 ## Table of content:
 - [nextcloud-file-sync.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh) - Do External Shares rescan only
-- [nextcloud-links-list](https://github.com/GAS85/nextcloud_scripts#nextcloud-links-list) - List for a Links Nextcloud Talk bot
-- [nextcloud-links.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-linkssh) - Links Nextcloud Talk bot
 - [nextcloud-preview.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-previewsh) - Automate preview generation
 - [nextcloud-rsync-to-remote.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-rsync-to-remotesh) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
 - [nextcloud-scripts-config.conf](https://github.com/GAS85/nextcloud_scripts#nextcloud-scripts-configconf) - Configuration file
 - [nextcloud-system-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-system-notificationsh) - Get System Notifications into Nextcloud
 - [nextcloud-usage-report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage-reportsh) - Generate report in cacti format
+- [Nextcloud Talk Bots](https://github.com/GAS85/nextcloud_scripts#NextcloudTalkBots)
+- [nextcloud-bot-links-list](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-links-list) - List for a Links Nextcloud Talk bot
+- [nextcloud-bot-links.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-linkssh) - Links Nextcloud Talk bot
+- [nextcloud-bot-rate-1-10.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-rate-1-10sh) - Nextcloud Talk bot to generate simple 1 to 10 rate
+- [nextcloud-bot-pass.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-passsh) - Nextcloud Talk bot to generate random password
 
 ---
 
@@ -106,22 +109,64 @@ AS-IS without any warranty. Output fields are:
 
 ---
 
-### nextcloud-links.sh
-This script work as a Talk Chat bot. Will return you usefull links specifyed in 'nextcloud-links-list'. To added bot simply execute:
+## Nextcloud Talk Bots
 
-    sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud_links.sh {ARGUMENTS} {ROOM} {USER}" 2 3
+### nextcloud-bot-links.sh
+This script work as a Talk Chat bot. Will return you usefull links specifyed in `nextcloud-links-list`.
+To add bot simply execute:
 
-More information is about under https://nextcloud-talk.readthedocs.io/en/latest/commands/
+    sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud-bot-links.sh {ARGUMENTS} {USER}" 2 3
+
+More information about is under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
 In a code, please specify absolute link to the `nextcloud-links-list` as `list`, e.g.:
 
     list="/usr/local/bin/nextcloud_links_list"
 
+Output example:
+
+    /links git
+    Hey,  here is something useful for you:
+    Your git is under https://domain/git
+
 Known Bug/Feature: it will return all lines with matched words, e.g. if you are typing `/links Your`, you will get whole list from example below.
 
-### nextcloud-links-list
+### nextcloud-bot-links-list
 This is a list of usefull Links or other infor for a Talk Chat bot. Simply one line per output. E.g.:
 
     Your wiki is under https://domain/wiki
     Your git is under https://domain/git
     Your notes are under https://domain/index.php/apps/notes
+
+Basically you can put in this list whatever to be shown.
+
+### nextcloud-bot-rate-1-10.sh
+This script work as a Talk Chat bot. Will return you (girs) rate from 1 till 10.
+To add bot simply execute:
+
+    sudo -u www-data php /var/www/nextcloud/occ talk:command:add rate rate "/usr/local/bin/nextcloud-bot-rate-1-10.sh {ARGUMENTS}" 2 3
+
+More information about is under https://nextcloud-talk.readthedocs.io/en/latest/commands/
+
+Output example:
+
+    /rate
+    9
+
+### nextcloud-bot-pass.sh
+This script work as a Talk Chat bot. Will return you random generated 16 (or any length) Characters password.
+To add bot simply execute:
+
+    sudo -u www-data php /var/www/nextcloud/occ talk:command:add pass pass "/usr/local/bin/nextcloud-bot-pass.sh {ARGUMENTS}" 1 3
+
+Please make sure that you put 1 as `response` argument, this will ensure that only requester can see the output. For more information please follow https://nextcloud-talk.readthedocs.io/en/latest/commands/
+
+Output example:
+
+    /pass 20
+    Generated with Urandom
+    tC1qPQpYJNesjl3BLRFC
+    Generated with OpenSSL
+    paRbAxtcU8+w6aN/SBF3
+    Generated with Bash random
+    3G5DAqyUeaN!Ewx0HqjO
