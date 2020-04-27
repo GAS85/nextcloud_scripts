@@ -115,7 +115,7 @@ AS-IS without any warranty. Output fields are:
 This script work as a Talk Chat bot. Will return you usefull links specifyed in `nextcloud-links-list`.
 To add bot simply execute:
 
-    sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud_links.sh {ARGUMENTS} {USER}" 2 3
+    sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud-bot-links.sh {ARGUMENTS} {USER}" 2 3
 
 More information about is under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
