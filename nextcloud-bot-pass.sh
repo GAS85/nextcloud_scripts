@@ -5,7 +5,7 @@
 # AS-IS without any warranty
 #
 # To added to Nextcloud please execute:
-# sudo -u www-data php /var/www/nextcloud/occ talk:command:add pass pass "/usr/local/bin/nextcloud-bot-pass.sh {ARGUMENTS} {ROOM} {USER}" 1 3
+# sudo -u www-data php /var/www/nextcloud/occ talk:command:add pass pass "/usr/local/bin/nextcloud-bot-pass.sh {ARGUMENTS}" 1 3
 #
 # More info under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
