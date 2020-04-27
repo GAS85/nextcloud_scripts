@@ -25,13 +25,13 @@ done
 
 list="/usr/local/bin/nextcloud_links_list"
 
-echo "Hey, $3 here is something useful for you:"
+echo "Hey, "$3" here is something useful for you:"
 if [ "$1" = "" ]; then
 	#will display whole list because nothing specifyed
 	cat $list
 else
 	#will display exact match, or an error message
-	if ! grep $1 $list; then
+	if ! grep "$1" $list; then
 		echo "Hmmm, nothing was found"
 	fi
 fi
