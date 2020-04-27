@@ -5,7 +5,7 @@
 # AS-IS without any warranty
 # 
 # To added to Nextcloud please execute:
-# sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud_links.sh {ARGUMENTS} {ROOM} {USER}" 2 3
+# sudo -u www-data php /var/www/nextcloud/occ talk:command:add links links "/usr/local/bin/nextcloud_links.sh {ARGUMENTS} {USER}" 2 3
 # More infor under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
 while test $# -gt 0; do
