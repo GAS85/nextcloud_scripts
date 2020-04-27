@@ -5,7 +5,7 @@
 # AS-IS without any warranty
 #
 # To added to Nextcloud please execute:
-# sudo -u www-data php /var/www/nextcloud/occ talk:command:add rate rate "/usr/local/bin/nextcloud-bot-rate-1-10.sh {ARGUMENTS} {ROOM} {USER}" 2 3
+# sudo -u www-data php /var/www/nextcloud/occ talk:command:add rate rate "/usr/local/bin/nextcloud-bot-rate-1-10.sh {ARGUMENTS}" 2 3
 #
 # More infor under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
