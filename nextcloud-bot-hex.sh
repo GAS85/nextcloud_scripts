@@ -25,7 +25,7 @@ while test $# -gt 0; do
 			echo "Simple execution: /hex 0x21"
 			echo "Complex execution: /hex 0x22.0x5a"
 			echo "Symbol should start with 0x, Separated by '.' dots, or ' ' spaces."
-            echo " "
+			echo " "
 			echo "Simple execution: /hex text"
 			exit 0
 			;;
