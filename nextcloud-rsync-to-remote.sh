@@ -39,7 +39,7 @@ InstallerCheck () {
 }
 
 # Check if config.php exist
-[[ -e $NextCloudPath/config/config.php ]] || { echo >&2 "Error - сonfig.php could not be found under "$NextCloudPath"/config/config.php. Please check the path"; exit 1; }
+[[ -e $NextCloudPath/config/config.php ]] || { echo >&2 "Error - config.php could not be found under "$NextCloudPath"/config/config.php. Please check the path"; exit 1; }
 
 # Fetch data directory place from the config file
 DataDirectory=$(grep datadirectory $NextCloudPath/config/config.php | cut -d "'" -f4)
