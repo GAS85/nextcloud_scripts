@@ -56,11 +56,19 @@ dateTo=$(date --date="-$timeShiftTo min" "+%Y-%m-%dT%H:%M:00+00:00")
 # Extract logs for a last defined minutes
 awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE" | grep "Infected file" | awk -F'["]' '{print $34}' > $tempfile
 
-# Extract logs for a last defined minutes, from a rotated log
-awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE.1" | grep "Infected file" | awk -F'["]' '{print $34}' >> $tempfile
+if [ ! -s "$tempfile" ]; then
 
-# Exit if no results found
-[[ -s "$tempfile" ]] || { rm $tempfile; exit 0; }
+	# Extract logs for a last defined minutes, from a ROTATED log if present
+	if [ "$(find "$LOGFILE.1" -mmin -"$lastMinutes")" != "" ]; then
+
+		awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE.1" | grep "Infected file" | awk -F'["]' '{print $34}' >> $tempfile
+
+	fi
+
+	# Exit if no results found
+	[[ -s "$tempfile" ]] || { rm $tempfile; exit 0; }
+
+fi
 
 generateNotification () {
 
