@@ -4,6 +4,8 @@
 * for Apache HTTP2 enablement check https://gist.github.com/GAS85/8dadbcb3c9a7ecbcb6705530c1252831
 
 ## Table of content:
+- [nextcloud-auditlog.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh#nextcloud-auditlog) - Perform Audit log analyse for a given time and output in cacti format
+- [nextcloud-av-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-av-notification) - Perform nextcloud log analyse and send notification to any user
 - [nextcloud-file-sync.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh) - Do External Shares rescan only
 - [nextcloud-preview.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-previewsh) - Automate preview generation
 - [nextcloud-rsync-to-remote.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-rsync-to-remotesh) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
@@ -28,6 +30,32 @@ Central configuration file, very handy if you are using more then one script fro
 
 ---
 
+### nextcloud-auditlog
+Perform Audit log analyse for a given time and output in cacti format. "Auditing / Logging" App must be enabled.
+Example:
+
+    sudo -u www-data /var/www/cacti/scripts/nextcloud_auditlog.sh -n
+    Login_UnknownUser:6 FileAccess_UnknownUser:0 FileWritten_UnknownUser:0 FileCreated_UnknownUser:0 FileDeleted_UnknownUser:0 New_Share_UnknownUser:0 Share_access_UnknownUser:0 Preview_access_UnknownUser:0 
+
+```
+Syntax is nextcloud-auditlog.sh.sh -h?Hv <user>
+
+	-h, or ?	for this help
+	-H	will generate Human output
+	-c	will generate clean uptput with only valid data
+	-n	will generate information about non registered users, e.g. CLI User, or user trying to login with wrong name, etc.
+	<user>	will generate output only for a particluar user. Default - all users will be fetched from the nextcloud
+```
+
+**TODO** Adjust for common config file and set limit to the users amount.
+
+---
+
+### nextcloud-av-notification
+Perform nextcloud log analyse and send notification to any user. Made to avoid [this Issue](https://github.com/nextcloud/files_antivirus/issues/152)
+
+---
+
 ### nextcloud-file-sync.sh
 Basically it works out from the box. Only that you have to check you nextcloud path, log path and create a log file for `php occ` output.
 Will do external ONLY shares rescan for nextcloud.
@@ -38,13 +66,13 @@ Put it in
 
 with `chmod 755`
 
-Run it under _nextcloud user_ (for me it is www-data) basically twice per day at 2:30 and 14:30. You can run it also hourly. This is my cron config:
+Run it under _nextcloud user_ (for me it is www-data) basically twice per day at 2:30 and 14:30. You can run it also hourly. This is my cron config (for more cron exampels, plesae refer to [manpages](http://manpages.ubuntu.com/manpages/focal/en/man5/crontab.5.html)):
 
     30 2,14 * * * perl -e 'sleep int(rand(1800))' && /usr/local/bin/nextcloud-file-sync.sh #Nextcloud file sync
 
 Here I add _perl -e 'sleep int(rand(1800))'_ to inject some random start time within 30 Minutes, but since it scans externals only it is not necessary any more. Your cron job config to run it hourly could be:
 
-    * */1 * * * /usr/local/bin/nextcloud-file-sync.sh
+    @hourly /usr/local/bin/nextcloud-file-sync.sh
 
 _If you would like to perform WHOLE nextcloud re-scan, please add -all to command, e.g.:_
 
