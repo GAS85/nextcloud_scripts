@@ -80,7 +80,9 @@ exec 3>&1 1>>${CRONLOGFILE} 2>>${CRONLOGFILE}
 
 touch $LOCKFILE
 
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Filescan +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+reqId=$(< /dev/urandom tr -dc A-Za-z0-9 | head -c20)
+
+echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Filescan +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 date >> $CRONLOGFILE
 
@@ -113,18 +115,18 @@ fi
 
 duration=$SECONDS
 
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Filescan Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Filescan Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 # OPTIONAL
 ### Start Cache cleanup
 
 if [ "$CACHE" -eq "1" ]; then
-	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Files Cache cleanup +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+	echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Files Cache cleanup +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 	SECONDS=0
 	date >> $CRONLOGFILE
 	$PHP $COMMAND files:cleanup >> $CRONLOGFILE
 	duration=$SECONDS
-	echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Files Cache cleanup Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+	echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Files Cache cleanup Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 fi
 ### FINISCH Cache cleanup
 
