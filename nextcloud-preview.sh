@@ -81,13 +81,15 @@ fi
 
 touch $LOCKFILE
 
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Preview generation +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+reqId=$(< /dev/urandom tr -dc A-Za-z0-9 | head -c20)
+
+echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Preview generation +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 date >> $CRONLOGFILE
 
 $PHP $COMMAND $OPTIONS $DEBUG >> $CRONLOGFILE
 
 duration=$SECONDS
-echo \{\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Preview generation Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Preview generation Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 rm $LOCKFILE
 
