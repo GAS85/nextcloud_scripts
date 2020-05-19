@@ -22,7 +22,7 @@ Syntax is nextcloud-auditlog.sh -h?Hcan <user>
 	-h, or ?	for this help
 	-H	will generate Human output
 	-c	will generate clean uptput with only valid data
-	-a	will generate summery over all users
+	-a	will generate summary over all users
 	-n	will generate information about non registered users, e.g. CLI User, or user trying to login with wrong name, etc.
 	<user>	will generate output only for a particluar user. Default - all users will be fetched from the nextcloud
 
