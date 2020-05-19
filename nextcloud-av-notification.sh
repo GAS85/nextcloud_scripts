@@ -81,7 +81,8 @@ preparingOutput () {
 
 	if [ "$(grep "$toFind" "$tempfile" | wc -l)" -gt 0 ]; then
 
-		grep "$toFind" "$tempfile" | awk '{$1=""; $2 = ""; $3 = "";$4 = ""; $5 = ""; $6 = ""; print $0}' | awk -F'[/]' '{$2 = ""; $3 = ""; print $0}' | sed 's/   //g' > $tempfile.output
+		#grep "$toFind" "$tempfile" | awk '{$1=""; $2 = ""; $3 = "";$4 = ""; $5 = ""; $6 = ""; print $0}' | awk -F'[/]' '{$1 = ""; $2 = ""; $3 = ""; print $0}' | sed 's/   //g' > $tempfile.output
+		grep "$toFind" "$tempfile" | awk '{$1=""; $2 = ""; $3 = "";$4 = ""; $5 = ""; $6 = ""; print $0}' | sed -r -e 's/appdata_.{12}//' | sed 's/   //g' > $tempfile.output
 
 		generateNotification
 
