@@ -19,6 +19,7 @@ while test $# -gt 0; do
 			echo " "
 			echo "Complex execution: /time TomeZone"
 			echo "E.g: /time Europe/Berlin"
+			echo " "
 			echo "A full list of timezones can be found here: https://worldtimeapi.org/timezones"
 			exit 0
 			;;
@@ -29,25 +30,19 @@ esac
 done
 
 if [ -z "$1" ]; then
-	echo "Timezone: $(date +"%Z")"
-	echo "UTC: $(date +"%:z")"
-	echo "Date: $(date +"%Y-%m-%d")"
-	echo "Time: $(date +"%T")"
+	echo "Current local time: $(date +"%Y-%m-%d"), $(date +"%T") $(date +"%Z")"
 	exit 0
 fi
 
 curl -s -m 5 "http://worldtimeapi.org/api/timezone/$1" | sed 's/,/\n/g' | sed 's/"//g' | sed 's/{\|}//g' > $temp
-
+ 
 if [ "$(cat $temp| head -c5)" = "error" ]; then
 	awk -F'[:]' '{ $1 = "Uuups, some error is here: "; print $0 }' $temp
+	echo "For help, please, type /time --help"
 	exit 0
 fi
 
-grep timezone $temp | awk -F'[:]' '{ $1 = "Timezone:"; print $0 }'
-grep utc_offset $temp | awk -F'[:]' '{ $1 = "UTC: "; print $1 $2 ":" $3 }'
-grep datetime $temp | tail -n 1 | awk -F'[:]' '{ $1 = "Date:"; print $0 }' | head -c16
-echo
-echo "Time: "$(grep datetime $temp | tail -c22 | head -c8)""
+echo "Current local time in $1: "$(grep datetime $temp | tail -c33 | head -c10), $(grep datetime $temp | tail -c+21 | head -c8) $(grep abbreviation $temp | tail -c+14)""
 
 rm $temp
 
