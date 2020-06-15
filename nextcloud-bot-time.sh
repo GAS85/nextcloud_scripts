@@ -43,20 +43,28 @@ done
 
 apiCall () {
  
-	curl -s -m 5 "http://worldtimeapi.org/api/timezone/"$call | sed 's/,/\n/g' | sed 's/"//g' | sed 's/{\|}//g' | sed 's/\]//g' | sed 's/\[//g' > $temp
+	if [ -z "$call" ]; then
 
-	if [ !-z "$(grep "Error" $temp)" ]; then
+		curl -s -m 5 "http://worldtimeapi.org/api/timezone.txt" > $temp
 
-		echo "Uuups, some error is here. Please try again later."
-		echo "For help, please, type /time --help"
-		rm $temp
-		exit 0
+	else
+
+		curl -s -m 5 "http://worldtimeapi.org/api/timezone/"$call.txt > $temp
 
 	fi
 
-	if [ "$(cat $temp| head -c5)" = "error" ]; then
+	if [ "$(cat $temp| head -c 5)" = "Error" ]; then
 
-		awk -F'[:]' '{ $1 = "Uuups, some error is here: "; print $0 }' $temp
+		awk '{ $1 = "Uuups, some error is here:"; print $0 }' $temp
+
+		newTry=$(curl -s -m 5 "http://worldtimeapi.org/api/timezone.txt" | grep "$call" | head -n 1)
+
+		if [ ! -z "$newTry" ]; then
+        
+			echo "Did you mean $newTry?"
+        
+		fi
+
 		echo "For help, please, type /time --help"
 		rm $temp
 		exit 0
@@ -82,7 +90,7 @@ if [ "$first" = "--list" ]; then
 
 		echo "Searching for your input in Timezones:"
 
-		if ! grep \"$rest\" $temp; then
+		if ! grep "$rest" $temp; then
 			echo "Hmmm, nothing was found"
 			echo "Try /time --list to see all Locations, or /time --help for help"
 		fi
