@@ -54,7 +54,7 @@ apiCall () {
 
 	fi
 
-	if [ "$(cat $temp| head -c5)" = "error" ]; then
+	if [ "$(cat $temp| head -c 5)" = "error" ]; then
 
 		awk -F'[:]' '{ $1 = "Uuups, some error is here: "; print $0 }' $temp
 		echo "For help, please, type /time --help"
