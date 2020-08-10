@@ -12,6 +12,9 @@ NextcloudURL="https://yourFQDN/nextcloud"
 user="user"
 password="xxxxx-xxxxx-xxxxxx"
 
+# Log Level: none|Info
+LogLvL=Info
+
 # Path to nextcloud
 NextCloudPath=/var/www/nextcloud
 
@@ -38,16 +41,17 @@ getFileID () {
    </d:prop>
  </d:propfind>' | xml_pp | grep "fileid" | sed -n 's/^.*<\(oc:fileid\)>\([^<]*\)<\/.*$/\2/p')"
 
-	echo "[INFO] Searching Nextcloud Internal FileID for $fileToTag"
+	[[ "$LogLvL" == "Info" ]] && { echo "[INFO] Searching Nextcloud Internal FileID for $fileToTag"; }
 
 	if [[ -z "$fileid" ]]; then
 
-		echo "[ERROR] File ID could not be found for a "$fileToTag" will stop now."
-		exit 1
+		echo "[WARNING] File ID could not be found for a "$fileToTag" will skipp it."
+		#exit 1
 
 	else
 
-		echo "[INFO] FileID is $fileid"
+		[[ "$LogLvL" == "Info" ]] && { echo "[INFO] FileID is $fileid."; }
+
 	fi
 
 }
@@ -69,11 +73,11 @@ getTag () {
 	if [[ ! -z "$getAllTags" ]]; then
 
 		tagID="$(echo $getAllTags | sed -n 's/^.*<\(oc:id\)>\([^<]*\)<\/.*$/\2/p')"
-		echo "[INFO] Internal TagID for tag $tagName is $tagID"
+		[[ "$LogLvL" == "Info" ]] && { echo "[INFO] Internal TagID for tag $tagName is $tagID."; }
 
 	else
 
-		echo "[ERROR] Could to find tagID for a tag $tagName"
+		echo "[ERROR] Could to find tagID for a tag $tagName."
 		exit 1
 
 	fi
@@ -85,16 +89,43 @@ SetTag () {
 	curl -s -m 10 -u $user:$password ''$NextcloudURL'/remote.php/dav/systemtags-relations/files/'$fileid/$tagID \
 -X PUT -H "Content-Type: application/json" \
 --data '{"userVisible":true,"userAssignable":true,"canAssign":true,"id":"'$tag'","name":"'$tagName'"}'
-	echo "[INFO] Setting tag $tagName for $fileToTag"
+	echo "[PROGRESS] Setting tag $tagName for $fileToTag."
+
+}
+
+checkIfTagIsSet () {
+
+	getAllTags="$(curl -s -m 10 -u $user:$password ''$NextcloudURL'/remote.php/dav/systemtags-relations/files/'$fileid'' \
+-X PROPFIND --data '<?xml version="1.0" ?>
+<d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">
+  <d:prop>
+    <oc:id />
+    <oc:display-name />
+    <oc:user-visible />
+    <oc:user-assignable />
+    <oc:can-assign />
+  </d:prop>
+</d:propfind>' | xml_pp | grep -w "$tagName")"
+
+	if [[ ! -z "$getAllTags" ]]; then
+
+		[[ "$LogLvL" == "Info" ]] && { echo "[INFO] Tag $tagName is already set for $fileToTag, skipping."; }
+
+	else
+
+		#echo "[INFO] Tag $tagName is not set"
+		SetTag
+
+	fi
 
 }
 
 findDuplicates () {
 
-	echo "[INFO] Searching for duplicates, this can take a long time..."
+	echo "[PROGRESS] Searching for duplicates, this can take a long time..."
 	cd $DataDirectory/$user/files/
 	find . ! -empty -type f -exec md5sum {} + | sort | uniq -w32 -dD >> $LOCKFILE
-	echo "[INFO] Finally finisched it is $(wc -l $LOCKFILE) duplicates found"
+	[[ "$LogLvL" == "Info" ]] && { echo "[INFO] Finally finisched it is $(wc -l $LOCKFILE) duplicates found"; }
 
 }
 
@@ -113,10 +144,8 @@ checkLockFile () {
 
 }
 
-# Based on https://gist.github.com/cdown/1163649
+# From https://gist.github.com/cdown/1163649
 urlencode() {
-	# urlencode <string>
-
 	local LANG=C i c e=''
 	for ((i=0;i<${#1};i++)); do
                 c=${1:$i:1}
@@ -145,7 +174,7 @@ fileToTagPath() {
 
 getTag
 
-#findDuplicates
+findDuplicates
 
 while read line; do
 
@@ -155,7 +184,7 @@ while read line; do
 
 	getFileID
 
-	SetTag
+	checkIfTagIsSet
 
 done < $LOCKFILE
 
