@@ -17,7 +17,7 @@
 - [nextcloud-bot-links.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-linkssh) - Links Nextcloud Talk bot
 - [nextcloud-bot-rate-1-10.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-rate-1-10sh) - Nextcloud Talk bot to generate simple 1 to 10 rate
 - [nextcloud-bot-pass.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-passsh) - Nextcloud Talk bot to generate random password
-- [nextcloud-duplicates-tagger.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-duplicates-tagger) - Will fild all duplicates in user folder and tag them with any needed tag.
+- [nextcloud-duplicates-tagger.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-duplicates-taggersh) - Will fild all duplicates in user folder and tag them with any needed tag.
 
 ---
 
