@@ -17,6 +17,7 @@
 - [nextcloud-bot-links.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-linkssh) - Links Nextcloud Talk bot
 - [nextcloud-bot-rate-1-10.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-rate-1-10sh) - Nextcloud Talk bot to generate simple 1 to 10 rate
 - [nextcloud-bot-pass.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-passsh) - Nextcloud Talk bot to generate random password
+- [nextcloud-duplicates-tagger.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-duplicates-tagger) - Will fild all duplicates in user folder and tag them with any needed tag.
 
 ---
 
@@ -198,3 +199,19 @@ Output example:
     paRbAxtcU8+w6aN/SBF3
     Generated with Bash random
     3G5DAqyUeaN!Ewx0HqjO
+
+### nextcloud-duplicates-tagger.sh
+This script will search all duplicatesin user folder and tag them with corresponding tag.
+Configuration:
+
+`tagName=duplicate` Tag Name to set on duplicates. Sould be exist in system (at least 1 file being tagged with this tag)
+
+`NextcloudURL="https://yourFQDN/nextcloud"` Nextcloud URL to perform API calls
+
+`User="user"` User name
+
+`password="xxxxx-xxxxx-xxxxxx" #Password, please create application password under `...index.php/settings/user/security`
+
+`LogLvL=Info` Log Level could be: none|Info
+
+`NextCloudPath=/var/www/nextcloud` Path to nextcloud Folder. Data folder will be reriven automatically from the config file.
