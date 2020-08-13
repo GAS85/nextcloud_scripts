@@ -51,7 +51,7 @@ fi
 ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')/config/config.php
 DataDirectory=$(grep datadirectory $ConfigDirectory | cut -d "'" -f4)
 LogFilePath=$(grep logfile $ConfigDirectory | cut -d "'" -f4)
-if [ LogFilePath = "" ]; then
+if [ "$LogFilePath" = "" ]; then
 	LOGFILE=$DataDirectory/nextcloud.log
 else
 	LOGFILE=$LogFilePath
