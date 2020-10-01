@@ -102,7 +102,9 @@ date >> $CRONLOGFILE
 
 if [ "$KEY" != "--all" ]; then
 	# get ALL external mounting points and users
-	$PHP $COMMAND files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}' > $LOCKFILE
+	$PHP $COMMAND files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}' | grep -v ","> $LOCKFILE
+	# get shares that belongs to more than 1 user
+	$PHP $COMMAND files_external:list | awk -F'|' '{print $8"/files"$3}'| tail -n +4 | head -n -1 | awk '{gsub(/ /, "", $0); print}' | grep "," | awk -F',' '{print $NF}' >> $LOCKFILE
 		
 	# rescan all shares
 	cat $LOCKFILE | while read line ; do $PHP $COMMAND $OPTIONS --path="$line"; done
