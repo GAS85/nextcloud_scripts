@@ -6,10 +6,10 @@
 #
 # AS-IS without any warranty
 
-SSHIdentityFile=/home/gas/.ssh/id_rsa
-SSHUser=gas
-RemoteAddr=gas-GP60-2PE
-RemoteBackupFolder=/media/gas/backuper/cubeitruck/nextcloud
+SSHIdentityFile=/path/to/file/.ssh/id_rsa
+SSHUser=user
+RemoteAddr=IP_or_host
+RemoteBackupFolder=/path/to/backup
 NextCloudPath=/var/www/nextcloud
 
 # Folder and files to be excluded from backup.
@@ -39,7 +39,7 @@ InstallerCheck () {
 }
 
 # Check if config.php exist
-[[ -e $NextCloudPath/config/config.php ]] || { echo >&2 "Error - сonfig.php could not be found under "$NextCloudPath"/config/config.php. Please check the path"; exit 1; }
+[[ -e $NextCloudPath/config/config.php ]] || { echo >&2 "Error - config.php could not be found under "$NextCloudPath"/config/config.php. Please check the path"; exit 1; }
 
 # Fetch data directory place from the config file
 DataDirectory=$(grep datadirectory $NextCloudPath/config/config.php | cut -d "'" -f4)
