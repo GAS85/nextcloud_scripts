@@ -26,9 +26,10 @@ PHP=/usr/bin/php
 
 ### Please do not touch under this line ###
 
-. nextcloud-scripts-config.conf
+. /etc/nextcloud-scripts-config.conf
 
 LOCKFILE=/tmp/nextcloud_preview
+LvL=1
 SECONDS=0
 
 if [ -f "$LOCKFILE" ]; then
@@ -53,6 +54,8 @@ fi
 
 # Fetch data directory and logs place from the config file
 ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')/config/config.php
+# Check if config.php exist
+[[ -r "$ConfigDirectory" ]] || { echo >&2 "Error - config.php could not be read under "$ConfigDirectory". Please check the path and permissions"; exit 1; }
 DataDirectory=$(grep datadirectory $ConfigDirectory | cut -d "'" -f4)
 LogFilePath=$(grep logfile $ConfigDirectory | cut -d "'" -f4)
 if [ LogFilePath = "" ]; then
@@ -83,13 +86,22 @@ touch $LOCKFILE
 
 reqId=$(< /dev/urandom tr -dc A-Za-z0-9 | head -c20)
 
-echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Starting Cron Preview generation +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+messageToLog () {
+
+	# ${0##*/} from https://stackoverflow.com/questions/192319/how-do-i-know-the-script-file-name-in-a-bash-script
+	echo \{\"reqId\":\"$reqId\",\"user\":\"none\",\"app\":\"${0##*/}\",\"url\":\"$COMMAND $OPTIONS\",\"message\":\"$Message\",\"level\":$LvL,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+
+}
+
+Message="+++ Starting Cron Preview generation +++"
+messageToLog
 date >> $CRONLOGFILE
 
 $PHP $COMMAND $OPTIONS $DEBUG >> $CRONLOGFILE
 
 duration=$SECONDS
-echo \{\"reqId\":\"$reqId\",\"app\":\"$COMMAND $OPTIONS\",\"message\":\""+++ Cron Preview generation Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+Message="+++ Cron Preview generation Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"
+messageToLog
 
 rm $LOCKFILE
 

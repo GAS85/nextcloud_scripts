@@ -13,7 +13,7 @@ RemoteBackupFolder=/path/to/backup
 NextCloudPath=/var/www/nextcloud
 
 # Folder and files to be excluded from backup.
-# - data/updater* exclude updater backups and dowloads 
+# - data/updater* exclude updater backups and dowloads
 # - *.ocTransferId*.part exclude partly uploaded files
 #
 # This is reasonable "must have", everything below is just to save place:
@@ -39,7 +39,7 @@ InstallerCheck () {
 }
 
 # Check if config.php exist
-[[ -e $NextCloudPath/config/config.php ]] || { echo >&2 "Error - сonfig.php could not be found under "$NextCloudPath"/config/config.php. Please check the path"; exit 1; }
+[[ -e $NextCloudPath/config/config.php ]] || { echo >&2 "Error - config.php could not be found under "$NextCloudPath"/config/config.php. Please check the path"; exit 1; }
 
 # Fetch data directory place from the config file
 DataDirectory=$(grep datadirectory $NextCloudPath/config/config.php | cut -d "'" -f4)
@@ -59,30 +59,30 @@ if [ "$CompressToArchive" == true ]; then
 	mkdir -p $WhereToMount;
 	mkdir -p $WhereToMount_$(date);
 
-	echo Mount remote system
+	echo "Mount remote system"
 	sshfs -o allow_other,default_permissions,IdentityFile=$SSHIdentityFile $SSHUser@$RemoteAddr:$RemoteBackupFolder:$RemoteBackupFolder $WhereToMount
 
 	sleep 2
 
 	if [ -f "$WhereToMount/$RemoteArchiveName" ]; then
 
-		echo Mount remote Archive
+		echo "Mount remote Archive"
 		archivemount $WhereToMount/$RemoteArchiveName $WhereToMount_$(date)
 
-		echo Rsync of NC into Archive
+		echo "Rsync of NC into Archive"
 		rsync $RsyncOptions $excludeFromBackup $NextCloudPath $WhereToMount_$(date)
 
-		echo Wait to finish sync
+		echo "Wait to finish sync"
 		sleep 5
 
-		echo Unmount Archive
+		echo "Unmount Archive"
 		umount $WhereToMount_$(date)
 
 	else
 
 		InstallerCheck tar
 
-		echo Put NC into Archive
+		echo "Put NC into Archive"
 		echo "Will create Archive under $WhereToMount"
 		echo "With name nextcloudBackup-$(date +"%Y-%m-%d_%T")_$(md5sum <<< $(ip route get 8.8.8.8 | awk '{print $NF; exit}')$(hostname) | cut -c1-5 ).tar.gz"
 
@@ -90,19 +90,25 @@ if [ "$CompressToArchive" == true ]; then
 
 	fi
 
-	echo Wait to finish sync
+	echo "Wait to finish sync"
 	sleep 5
 
-	echo Unmount Remote FS
+	echo "Unmount Remote FS"
 	umount $WhereToMount
 
 else
 
-	echo Run Rsync of NC root folder.
-	rsync $RsyncOptions --exclude=data --exclude=$DataDirectory -e "ssh -i $SSHIdentityFile" $NextCloudPath $SSHUser@$RemoteAddr:$RemoteBackupFolder/nextcloud/
+	echo "Run Rsync of NC root folder."
+	echo "From Source: $NextCloudPath"
+	echo "To: Destination: $RemoteAddr"
+	echo "    Destination Folder: $RemoteBackupFolder"
+	rsync $RsyncOptions --exclude=data --exclude=$DataDirectory -e "ssh -i $SSHIdentityFile" $NextCloudPath $SSHUser@$RemoteAddr:$RemoteBackupFolder
 
-	echo Run Rsync of NC Data folder (found under $DataDirectory).
-	rsync $RsyncOptions $excludeFromBackup -e "ssh -i $SSHIdentityFile" $DataDirectory $SSHUser@$RemoteAddr:$RemoteBackupFolder/nextcloud/
+	echo "Run Rsync of NC Data folder (found under $DataDirectory)."
+	echo "From Source: $DataDirectory"
+	echo "To: Destination: $RemoteAddr"
+	echo "    Destination Folder: $RemoteBackupFolder"
+	rsync $RsyncOptions $excludeFromBackup -e "ssh -i $SSHIdentityFile" $DataDirectory $SSHUser@$RemoteAddr:$RemoteBackupFolder
 
 fi
 
