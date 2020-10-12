@@ -5,6 +5,7 @@
 # AS-IS without any warranty
 
 NextCloudPath=/var/www/nextcloud
+COMMAND=/var/www/nextcloud/occ
 
 # Do not touch (true) appdata_XXXXXX directory, e.g. previews and system/app files.
 # If you set false, appdata and previews will be also evaluated
@@ -14,30 +15,30 @@ appdata=true
 
 LOCKFILE=/tmp/nextcloud-hardlink-duplicates.tmp
 
-# Check if config.php exist
-[[ -r "$NextCloudPath"/config/config.php ]] || { echo >&2 "Error - config.php could not be read under "$NextCloudPath"/config/config.php. Please check the path and permissions"; exit 1; }
+# Check if OCC is reacheble
+if [ ! -w "$COMMAND" ]; then
+	echo "ERROR - Command $COMMAND not found. Make sure taht path is corrct."
+	exit 1
+else
+	if [ "$EUID" -ne "$(stat -c %u $COMMAND)" ]; then
+		echo "ERROR - Command $COMMAND not executable for current user.
+	Make sure that user has right to execute it.
+	Script must be executed as $(stat -c %U $COMMAND)."
+		exit 1
+	fi
+fi
 
-# Fetch data directory place from the config file
-DataDirectory=$(grep datadirectory "$NextCloudPath"/config/config.php | cut -d "'" -f4)
+# Fetch data directory and logs place from the config file
+ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')/config/config.php
+# Check if config.php exist
+[[ -r "$ConfigDirectory" ]] || { echo >&2 "Error - config.php could not be read under "$ConfigDirectory". Please check the path and permissions"; exit 1; }
+DataDirectory=$(grep datadirectory $ConfigDirectory | cut -d "'" -f4)
 
 if [ -f "$LOCKFILE" ]; then
 	# Remove lock file if script fails last time and did not run more then 10 days due to lock file.
 	find "$LOCKFILE" -mtime +10 -type f -delete
 	echo "WARNING - Other instance is still active, exiting."
 	exit 1
-fi
-
-# Check if OCC is reacheble
-if [ ! -w "$NextCloudPath/occ" ]; then
-	echo "ERROR - Command $NextCloudPath/occ not found. Make sure taht path is corrct."
-	exit 1
-else
-	if [ "$EUID" -ne "$(stat -c %u $NextCloudPath/occ)" ]; then
-		echo "ERROR - Command $NextCloudPath/occ not executable for current user.
-	Make sure that user has right to execute it.
-	Script must be executed as $(stat -c %U $NextCloudPath/occ)."
-		exit 1
-	fi
 fi
 
 maintenance_on () {
