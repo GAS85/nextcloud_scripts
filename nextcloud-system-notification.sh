@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 
 # By Georgiy Sitnikov.
 #
@@ -7,13 +7,13 @@
 
 # Adjust to your NC installation
 	# Administrator User to notify
-USER="gas"
+USER="admin"
 	# Your NC OCC Command path
 COMMAND=/var/www/nextcloud/occ
 	# Your PHP location
 PHP=/usr/bin/php
 	# Path to NC log file
-LOGFILE=/var/nextcloud/data/nextcloud.log
+LOGFILE=/var/www/nextcloud/data/nextcloud.log
 
 ################
 
@@ -35,7 +35,7 @@ else
 fi
 
 # Fetch data directory and logs place from the config file
-ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')/config/config.php
+ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')config/config.php
 # Check if config.php exist
 [[ -r "$ConfigDirectory" ]] || { echo >&2 "Error - config.php could not be read under "$ConfigDirectory". Please check the path and permissions"; exit 1; }
 DataDirectory=$(grep datadirectory $ConfigDirectory | cut -d "'" -f4)
