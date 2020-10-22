@@ -89,7 +89,7 @@ reqId=$(< /dev/urandom tr -dc A-Za-z0-9 | head -c20)
 messageToLog () {
 
 	# ${0##*/} from https://stackoverflow.com/questions/192319/how-do-i-know-the-script-file-name-in-a-bash-script
-	echo \{\"reqId\":\"$reqId\",\"user\":\"none\",\"app\":\"${0##*/}\",\"url\":\"$COMMAND $OPTIONS\",\"message\":\"$Message\",\"level\":$LvL,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+	echo \{\"reqId\":\"$reqId\",\"user\":\"--\",\"app\":\"${0##*/}\",\"url\":\"$COMMAND $OPTIONS\",\"message\":\"$Message\",\"level\":$LvL,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 }
 
