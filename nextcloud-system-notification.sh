@@ -14,6 +14,8 @@ COMMAND=/var/www/nextcloud/occ
 PHP=/usr/bin/php
 	# Path to NC log file
 LOGFILE=/var/www/nextcloud/data/nextcloud.log
+	# Inform about Security updates in message
+MarkSecurity=true
 
 ################
 
@@ -23,43 +25,67 @@ OPTIONS="notification:generate"
 
 # Check if OCC is reacheble
 if [ ! -w "$COMMAND" ]; then
+
 	echo "ERROR - Command $COMMAND not found. Make sure taht path is corrct."
 	exit 1
+
 else
+
 	if [ "$EUID" -ne "$(stat -c %u $COMMAND)" ]; then
+    
 		echo "ERROR - Command $COMMAND not executable for current user.
 	Make sure that user has right to execute it.
 	Script must be executed as $(stat -c %U $COMMAND)."
 		exit 1
+
 	fi
+
 fi
 
 # Fetch data directory and logs place from the config file
 ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')config/config.php
 # Check if config.php exist
 [[ -r "$ConfigDirectory" ]] || { echo >&2 "Error - config.php could not be read under "$ConfigDirectory". Please check the path and permissions"; exit 1; }
+
 DataDirectory=$(grep datadirectory $ConfigDirectory | cut -d "'" -f4)
 LogFilePath=$(grep logfile $ConfigDirectory | cut -d "'" -f4)
+
 if [ LogFilePath = "" ]; then
+
 	LOGFILE=$DataDirectory/nextcloud.log
+
 else
+
 	LOGFILE=$LogFilePath
+
 fi
 
 # Check if php is executable
 if [ ! -x "$PHP" ]; then
+
 	echo "ERROR - PHP not found, or not executable."
 	exit 1
+
 fi
 
 # Check if NC Log file is writable
 if [ ! -w "$LOGFILE" ]; then
+
 	echo "WARNING - could not write to Log file $LOGFILE, will drop log messages. Is User Correct? Current log file owener is $(stat -c %U $LOGFILE)"
 	LOGFILE=/dev/null
+
 fi
 
-#PACKAGES=$(apt list --upgradable 2>&1)
-PACKAGESRAW=$(apt-get -s dist-upgrade | awk '/^Inst/ { print $2 }' 2>&1)
+if [[ "$MarkSecurity" == true ]]; then
+
+	PACKAGESRAW=$(apt-get -s dist-upgrade | grep -i "security" | awk '/^Inst/ { print $2 " [SECURITY update]" }' && apt-get -s dist-upgrade | grep -vi "security" | awk '/^Inst/ { print $2 }' 2>&1)
+
+else
+
+    PACKAGESRAW=$(apt-get -s dist-upgrade | awk '/^Inst/ { print $2 }' 2>&1)
+
+fi
+
 NUM_PACKAGES=$(echo "$PACKAGESRAW" | wc -l)
 PACKAGES=$(echo "$PACKAGESRAW"|xargs)
 READOnlyDev=$(mount | grep "/dev" | grep '(ro,' | wc -l)
@@ -82,8 +108,6 @@ if [ "$PACKAGES" != "" ]; then
 	Message="+++ $NUM_PACKAGES packages require to be updated. $UPDATE_MESSAGE +++"
 	LvL=1
 	messageToLog
-	
-	#echo \{\"reqId\":\"$reqId\",\"user\":\"$USER\",\"app\":\"Notification\",\"message\":\""+++ $NUM_PACKAGES packages require to be updated. $UPDATE_MESSAGE +++"\",\"level\":1,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
 
 elif [ -f /var/run/reboot-required ]; then
 
