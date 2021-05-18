@@ -9,6 +9,7 @@ USER="admin"
 
 NextCloudPath=/var/www/nextcloud
 
+# Last minutes to grep the logs, should be in same as cron job period
 lastMinutes=30
 
 ###
@@ -24,11 +25,11 @@ DataDirectory=$(grep datadirectory "$NextCloudPath"/config/config.php | cut -d "
 # Check if audit.log exist
 LogFilePath=$(grep logfile "$NextCloudPath"/config/config.php | cut -d "'" -f4)
 if [ LogFilePath = "" ]; then
-	LOGFILE=$DataDirectory/nextcloud.log
+	LogFile=$DataDirectory/nextcloud.log
 else
-	LOGFILE=$LogFilePath
+	LogFile=$LogFilePath
 fi
-[[ -r "$LOGFILE" ]] || { echo >&2 "Error - nextcloud.log could not be found under "$LOGFILE"."; exit 1; }
+[[ -r "$LogFile" ]] || { echo >&2 "Error - nextcloud.log could not be found under "$LogFile"."; exit 1; }
 
 # Check if OCC is reacheble
 if [ ! -w "$NextCloudPath/occ" ]; then
@@ -54,14 +55,14 @@ dateFrom=$(date --date="-$timeShiftFrom min" "+%Y-%m-%dT%H:%M:00+00:00")
 dateTo=$(date --date="-$timeShiftTo min" "+%Y-%m-%dT%H:%M:00+00:00")
 
 # Extract logs for a last defined minutes
-awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE" | grep "Infected file" | awk -F'["]' '{print $34}' > $tempfile
+awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LogFile" | grep "Infected file" | awk -F'["]' '{print $34}' > $tempfile
 
 if [ ! -s "$tempfile" ]; then
 
 	# Extract logs for a last defined minutes, from a ROTATED log if present
-	if [ "$(find "$LOGFILE.1" -mmin -"$lastMinutes")" != "" ]; then
+	if [ "$(find "$LogFile.1" -mmin -"$lastMinutes")" != "" ]; then
 
-		awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE.1" | grep "Infected file" | awk -F'["]' '{print $34}' >> $tempfile
+		awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LogFile.1" | grep "Infected file" | awk -F'["]' '{print $34}' >> $tempfile
 
 	fi
 

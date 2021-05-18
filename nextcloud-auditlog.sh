@@ -14,17 +14,19 @@ lastMinutes=5
 
 tempfile=/tmp/nextcloud_auditlog_$(date +"%M-%N").tmp
 
+. /etc/nextcloud-scripts-config.conf
+
 show_help () {
 
-	echo "This script will fetch data from the Nextclud audit.log and make it Human or Cacti readable.
+    echo "This script will fetch data from the Nextclud audit.log and make it Human or Cacti readable.
 Syntax is nextcloud-auditlog.sh -h?Hcan <user>
 
-	-h, or ?	for this help
-	-H	will generate Human output
-	-c	will generate clean uptput with only valid data
-	-a	will generate summary over all users
-	-n	will generate information about non registered users, e.g. CLI User, or user trying to login with wrong name, etc.
-	<user>	will generate output only for a particluar user. Default - all users will be fetched from the nextcloud
+    -h, or ?  for this help
+    -H        will generate Human output
+    -c        will generate clean output with only valid data
+    -a        will generate summary over all users
+    -n        will generate information about nonregistered users, e.g. CLI User, or user trying to login with wrong name, etc.
+    <user>    will generate output only for a particluar user. Default - all users will be fetched from the nextcloud
 
 By Georgiy Sitnikov."
 
@@ -32,7 +34,7 @@ By Georgiy Sitnikov."
 
 fetchLog () {
 
-	awk -v d1=$dateFrom -v d2=$dateTo -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE" > $tempfile
+	awk -v d1=$dateFrom -v d2=$dateTo -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LogFile" > $tempfile
 
 }
 
@@ -123,15 +125,15 @@ DataDirectory=$(grep datadirectory "$NextCloudPath"/config/config.php | cut -d "
 
 if [ "$LogFilePath" = "" ]; then
 
-	LOGFILE=$DataDirectory/audit.log
+	LogFile=$DataDirectory/audit.log
 
 else
 
-	LOGFILE=$LogFilePath
+	LogFile=$LogFilePath
 
 fi
 
-[[ -r "$LOGFILE" ]] || { echo >&2 "Error - audit.log could not be found under "$LOGFILE"."; exit 1; }
+[[ -r "$LogFile" ]] || { echo >&2 "Error - audit.log could not be found under "$LogFile"."; exit 1; }
 
 # Check if OCC is reacheble
 if [ ! -w "$NextCloudPath/occ" ]; then

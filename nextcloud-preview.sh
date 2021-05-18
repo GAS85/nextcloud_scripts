@@ -12,16 +12,16 @@ OPTIONS="preview:pre-generate"
 
 # Path to your occ command.
 # E.g. /var/www/nextcloud/occ
-COMMAND=/var/www/nextcloud/occ
+Command=/var/www/nextcloud/occ
 
 # Path to NC log file
-LOGFILE=/var/www/nextcloud/data/nextcloud.log
+LogFile=/var/www/nextcloud/data/nextcloud.log
 
 # Optional:
 # Path to log file for this script
-CRONLOGFILE=/var/log/next-cron.log
+CronLogFile=/var/log/next-cron.log
 
-# Your PHP location if differnt
+# Your PHP location if different
 PHP=/usr/bin/php
 
 ### Please do not touch under this line ###
@@ -33,35 +33,35 @@ LvL=1
 SECONDS=0
 
 if [ -f "$LOCKFILE" ]; then
-	# Remove lock file if script fails last time and did not run more then 10 days due to lock file.
+	# Remove lock file if script fails last time and did not run more than 10 days due to lock file.
 	find "$LOCKFILE" -mtime +10 -type f -delete
-	echo "WARNING - Other instance is still active, exiting." >> $CRONLOGFILE
+	echo "WARNING - Other instance is still active, exiting." >> $CronLogFile
 	exit 1
 fi
 
-# Check if OCC is reacheble
-if [ ! -w "$COMMAND" ]; then
-	echo "ERROR - Command $COMMAND not found. Make sure taht path is corrct."
+# Check if OCC is reachable
+if [ ! -w "$Command" ]; then
+	echo "ERROR - Command $Command not found. Make sure that path is correct."
 	exit 1
 else
-	if [ "$EUID" -ne "$(stat -c %u $COMMAND)" ]; then
-		echo "ERROR - Command $COMMAND not executable for current user.
+	if [ "$EUID" -ne "$(stat -c %u $Command)" ]; then
+		echo "ERROR - Command $Command not executable for current user.
 	Make sure that user has right to execute it.
-	Script must be executed as $(stat -c %U $COMMAND)."
+	Script must be executed as $(stat -c %U $Command)."
 		exit 1
 	fi
 fi
 
 # Fetch data directory and logs place from the config file
-ConfigDirectory=$(echo $COMMAND | sed 's/occ//g')/config/config.php
+ConfigDirectory=$(echo $Command | sed 's/occ//g')/config/config.php
 # Check if config.php exist
 [[ -r "$ConfigDirectory" ]] || { echo >&2 "Error - config.php could not be read under "$ConfigDirectory". Please check the path and permissions"; exit 1; }
 DataDirectory=$(grep datadirectory $ConfigDirectory | cut -d "'" -f4)
 LogFilePath=$(grep logfile $ConfigDirectory | cut -d "'" -f4)
 if [ LogFilePath = "" ]; then
-	LOGFILE=$DataDirectory/nextcloud.log
+	LogFile=$DataDirectory/nextcloud.log
 else
-	LOGFILE=$LogFilePath
+	LogFile=$LogFilePath
 fi
 
 # Check if php is executable
@@ -71,15 +71,15 @@ if [ ! -x "$PHP" ]; then
 fi
 
 # Check if NC Log file is writable
-if [ ! -w "$LOGFILE" ]; then
-	echo "WARNING - could not write to Log file $LOGFILE, will drop log messages. Is User Correct? Current log file owener is $(stat -c %U $LOGFILE)"
-	LOGFILE=/dev/null
+if [ ! -w "$LogFile" ]; then
+	echo "WARNING - could not write to Log file $LogFile, will drop log messages. Is User Correct? Current log file owner is $(stat -c %U $LogFile)"
+	LogFile=/dev/null
 fi
 
 # Check if CRON Log file is writable
-if [ ! -w "$CRONLOGFILE" ]; then
-	echo "WARNING - could not write to Log file $CRONLOGFILE, will drop log messages. Is User Correct? Current log file owener is $(stat -c %U $CRONLOGFILE)"
-	CRONLOGFILE=/dev/null
+if [ ! -w "$CronLogFile" ]; then
+	echo "WARNING - could not write to Log file $CronLogFile, will drop log messages. Is User Correct? Current log file owner is $(stat -c %U $CronLogFile)"
+	CronLogFile=/dev/null
 fi
 
 touch $LOCKFILE
@@ -89,15 +89,15 @@ reqId=$(< /dev/urandom tr -dc A-Za-z0-9 | head -c20)
 messageToLog () {
 
 	# ${0##*/} from https://stackoverflow.com/questions/192319/how-do-i-know-the-script-file-name-in-a-bash-script
-	echo \{\"reqId\":\"$reqId\",\"user\":\"none\",\"app\":\"${0##*/}\",\"url\":\"$COMMAND $OPTIONS\",\"message\":\"$Message\",\"level\":$LvL,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LOGFILE
+	echo \{\"reqId\":\"$reqId\",\"user\":\"none\",\"app\":\"${0##*/}\",\"url\":\"$Command $OPTIONS\",\"message\":\"$Message\",\"level\":$LvL,\"time\":\"`date "+%Y-%m-%dT%H:%M:%S%:z"`\"\} >> $LogFile
 
 }
 
 Message="+++ Starting Cron Preview generation +++"
 messageToLog
-date >> $CRONLOGFILE
+date >> $CronLogFile
 
-$PHP $COMMAND $OPTIONS $DEBUG >> $CRONLOGFILE
+$PHP $Command $OPTIONS $DEBUG >> $CronLogFile
 
 duration=$SECONDS
 Message="+++ Cron Preview generation Completed. Execution time: $(($duration / 60)) minutes and $(($duration % 60)) seconds +++"
