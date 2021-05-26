@@ -30,7 +30,7 @@ LOCKFILE=/tmp/nextcloud-duplicates-tagger.tmp
 # Fetch data directory place from the config file
 DataDirectory=$(grep datadirectory "$NextCloudPath"/config/config.php | cut -d "'" -f4)
 
-# Check if user Derectory exist
+# Check if user Directory exist
 [[ -d "$DataDirectory/$user" ]] || { echo >&2 "[ERROR] User "$user" could not be found. Please check if case is correct"; exit 1; }
 
 getFileID () {
@@ -136,7 +136,7 @@ findDuplicates () {
 	cd $DataDirectory/$user/files/
 
 	find . ! -empty -type f -exec md5sum {} + | sort | uniq -w32 -dD >> $LOCKFILE
-	[[ "$LogLvL" == "Info" ]] && { echo "[INFO] Finally finisched it is $(wc -l $LOCKFILE | awk '{print $1}') duplicates found"; }
+	[[ "$LogLvL" == "Info" ]] && { echo "[INFO] Finally finished it is $(wc -l $LOCKFILE | awk '{print $1}') duplicates found"; }
 
 }
 
@@ -144,7 +144,7 @@ checkLockFile () {
 
 	if [ -f "$LOCKFILE" ]; then
 
-		# Remove lock file if script fails last time and did not run more then 10 days due to lock file.
+		# Remove lock file if script fails last time and did not run more than 10 days due to lock file.
 		echo "[WARNING] - An older Duplicates report found in a $LOCKFILE,
             will use it to tag files, it contains $(wc -l $LOCKFILE | awk '{print $1}') duplicates.
             If you want to perform new search, please delete this file under: $LOCKFILE

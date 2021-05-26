@@ -9,7 +9,10 @@
 #
 # More info under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
-length=16
+# Default password length
+length=20
+
+###
 
 while test $# -gt 0; do
 	case "$1" in
@@ -47,7 +50,7 @@ if [ -r "/dev/urandom" ]; then
 	exit 0
 fi
 
-# Use openssl if presneted
+# Use openssl if presented
 if [ -x "/usr/bin/openssl" ]; then
 	echo "Generated with OpenSSL"
 	/usr/bin/openssl rand -base64 "$length" | head -c"$length"
