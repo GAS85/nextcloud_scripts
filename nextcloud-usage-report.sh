@@ -9,9 +9,9 @@
 # run ./nextcloud-usage_report.sh user to get specific user information
 # AS-IS without any warranty
 #
-# output felds are: storage_all, storage_used, shares_new, files_all, files_new, files_read
+# output fields are: storage_all, storage_used, shares_new, files_all, files_new, files_read
 
-COMMAND=/var/www/nextcloud/occ
+Command=/var/www/nextcloud/occ
 OPTIONS="usage-report:generate"
 LOCKFILE=/tmp/nextcloud_usagereport
 TMPFILE=/tmp/nextcloud_usagereport_tmp
@@ -22,8 +22,8 @@ PHP=/usr/bin/php
 [ -f "$LOCKFILE" ] && exit
 touch $LOCKFILE
 
-#get usage imnformation
-$PHP $COMMAND $OPTIONS $1 > $LOCKFILE
+#get usage information
+$PHP $Command $OPTIONS $1 > $LOCKFILE
 
 #generate log in Cacti format
 awk -F, '{print $1"storage_all:"$3" " $1"storage_used:"$4" " $1"files_all:"$5" " $1"shares_new:"$6" " $1"files_new:"$7" " $1"files_read:"$8" "}' $LOCKFILE | sed 's/"//g' | sed ':a;N;$!ba;s/\n/ /g' >> $TMPFILE
