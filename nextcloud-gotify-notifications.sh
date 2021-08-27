@@ -28,12 +28,12 @@ if [ ! -f "$LOCKFILE" ]; then
 fi
 
 # Get Nextcloud Notifications
-curl $curlConfiguration https://$USER:$PASSWORD@$NEXTCLOUD/ocs/v2.php/apps/notifications/api/v2/notifications | grep -oP "(?<=<notification_id>)[^<]+" > $TMPFILE
+curl $curlConfiguration https://$USER:$PASSWORD@$NEXTCLOUD/ocs/v2.php/apps/notifications/api/v2/notifications | grep -oP "(?<=<notification_id>)[^<]+" | sort > $TMPFILE
 
-lastSeen=$(head -n 1 $LOCKFILE)
+lastSeen=$(tail -n 1 $LOCKFILE)
 
 # Stop if last seen message was already seen
-if [[ "$(head -n 1 $TMPFILE)" -le "$lastSeen" ]]; then exit 0; fi
+if [[ "$(tail -n 1 $TMPFILE)" -le "$lastSeen" ]]; then exit 0; fi
 
 COUNT=0;
 for ID in `cat $TMPFILE`; do
