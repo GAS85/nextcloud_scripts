@@ -9,20 +9,30 @@
 
 ## Quick overview
 
+- [nextcloud-configuration.conf](https://github.com/GAS85/nextcloud_scripts#configuration) - Central place for configuration.
+
+----
+
 - [nextcloud-auditlog.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh#nextcloud-auditlog) - Perform Audit log analyze for a given time and output in cacti format
 - [nextcloud-av-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-av-notification) - Perform nextcloud log analyze and send notification to any user
+- [nextcloud-duplicates-tagger.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-duplicates-tagger) - Will find all duplicates in user folder and tag them with any needed tag.
 - [nextcloud-file-sync.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh) - Do External Shares rescan only
+- [nextcloud-gotify-notifications.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-gotify-notificationssh) - Read Nectcloud Notifications and push them to Gotify.
+- [nextcloud-hardlink-duplicates.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-hardlink-duplicatessh) - Will create hardlinks to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
 - [nextcloud-preview.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-previewsh) - Automate preview generation
 - [nextcloud-rsync-to-remote.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-rsync-to-remotesh) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
 - [nextcloud-scripts-config.conf](https://github.com/GAS85/nextcloud_scripts#nextcloud-scripts-configconf) - Configuration file
 - [nextcloud-system-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-system-notificationsh) - Get System Notifications into Nextcloud
 - [nextcloud-usage-report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage-reportsh) - Generate report in cacti format
+
+----
+
 - [Nextcloud Talk Bots](https://github.com/GAS85/nextcloud_scripts#NextcloudTalkBots)
 - [nextcloud-bot-links-list](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-links-list) - List for a Links Nextcloud Talk bot
 - [nextcloud-bot-links.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-linkssh) - Links Nextcloud Talk bot
 - [nextcloud-bot-rate-1-10.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-rate-1-10sh) - Nextcloud Talk bot to generate simple 1 to 10 rate
 - [nextcloud-bot-pass.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-passsh) - Nextcloud Talk bot to generate random password
-- [nextcloud-duplicates-tagger.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-duplicates-tagger) - Will find all duplicates in user folder and tag them with any needed tag.
+
 
 ## Installation
 
@@ -81,6 +91,23 @@ Syntax is nextcloud-auditlog.sh.sh -h?Hv <user>
 
 If you have antivirus installed, then try it. Perform `nextcloud.log` analyze and send notification to any user. Made to avoid [this Issue](https://github.com/nextcloud/files_antivirus/issues/152).
 
+### nextcloud-duplicates-tagger.sh
+
+This script will search all duplicates in user folder and tag them with corresponding tag.
+Configuration:
+
+`tagName=duplicate` Tag Name to set on duplicates. Should be exist in system (at least 1 file being tagged with this tag)
+
+`NextcloudURL="https://yourFQDN/nextcloud"` Nextcloud URL to perform API calls
+
+`User="user"` Username
+
+`password="xxxxx-xxxxx-xxxxxx" #Password, please create application password under `...index.php/settings/user/security`
+
+`LogLvL=Info` Log Level could be: none|Info
+
+`NextCloudPath=/var/www/nextcloud` Path to nextcloud Folder. Data folder will be retrieved automatically from the config file.
+
 ### nextcloud-file-sync.sh
 
 Performs External Shares rescan only that will save a lot of time in compare to scan whole nextcloud. Basically, it works out from the box. Only that you must check you nextcloud path, log path and create a log file for `php occ` output.
@@ -108,6 +135,18 @@ Will generate NC log output:
 ![](https://help.nextcloud.com/uploads/default/original/2X/b/bfc2a6ad6de3d7af5d287776e87ffbcd5d6fcc18.png)
 
 I have had some issues (like described here https://help.nextcloud.com/t/occ-files-cleanup-does-it-delete-the-db-table-entries-of-the-missing-files/20253) in older NC versions, so I added workaround from line 60 till 67 as `files:cleanup` command, nut sure if it is needed now, but it does not harm anything.
+
+### nextcloud-gotify-notifications.sh
+
+This script will read Nextcloud Notifications via API call and push them to [Gotify server](https://github.com/gotify/server). If you do not see any notifications, try to delete lock file, specifyed in `LOCKFILE`
+
+Please create Application password for this script.
+
+In Gotify Server you have to create an Application and provide API Token to script.
+
+### nextcloud-hardlink-duplicates.sh
+
+In order to reduce HDD space being used, this script will create hardlinks to duplicated files together with [rdfind](https://github.com/pauldreik/rdfind).
 
 ### nextcloud-preview.sh
 
@@ -231,20 +270,3 @@ paRbAxtcU8+w6aN/SBF3
 Generated with Bash random
 3G5DAqyUeaN!Ewx0HqjO
 ```
-
-### nextcloud-duplicates-tagger.sh
-
-This script will search all duplicates in user folder and tag them with corresponding tag.
-Configuration:
-
-`tagName=duplicate` Tag Name to set on duplicates. Should be exist in system (at least 1 file being tagged with this tag)
-
-`NextcloudURL="https://yourFQDN/nextcloud"` Nextcloud URL to perform API calls
-
-`User="user"` Username
-
-`password="xxxxx-xxxxx-xxxxxx" #Password, please create application password under `...index.php/settings/user/security`
-
-`LogLvL=Info` Log Level could be: none|Info
-
-`NextCloudPath=/var/www/nextcloud` Path to nextcloud Folder. Data folder will be retrieved automatically from the config file.
