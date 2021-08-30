@@ -9,30 +9,29 @@
 
 ## Quick overview
 
-- [nextcloud-configuration.conf](https://github.com/GAS85/nextcloud_scripts#configuration) - Central place for configuration.
+- [nextcloud-configuration.conf](#configuration) - Central place for configuration.
 
 ----
 
-- [nextcloud-auditlog.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh#nextcloud-auditlog) - Perform Audit log analyze for a given time and output in cacti format
-- [nextcloud-av-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-av-notification) - Perform nextcloud log analyze and send notification to any user
-- [nextcloud-duplicates-tagger.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-duplicates-tagger) - Will find all duplicates in user folder and tag them with any needed tag.
-- [nextcloud-file-sync.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-file-syncsh) - Do External Shares rescan only
-- [nextcloud-gotify-notifications.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-gotify-notificationssh) - Read Nectcloud Notifications and push them to Gotify.
-- [nextcloud-hardlink-duplicates.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-hardlink-duplicatessh) - Will create hardlinks to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
-- [nextcloud-preview.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-previewsh) - Automate preview generation
-- [nextcloud-rsync-to-remote.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-rsync-to-remotesh) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
-- [nextcloud-scripts-config.conf](https://github.com/GAS85/nextcloud_scripts#nextcloud-scripts-configconf) - Configuration file
-- [nextcloud-system-notification.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-system-notificationsh) - Get System Notifications into Nextcloud
-- [nextcloud-usage-report.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-usage-reportsh) - Generate report in cacti format
+- [nextcloud-auditlog](#nextcloud-auditlog) - Perform Audit log analyze for a given time and output in cacti format
+- [nextcloud-av-notification](#nextcloud-av-notification) - Perform nextcloud log analyze and send notification to any user
+- [nextcloud-duplicates-tagger](#nextcloud-duplicates-tagger) - Will find all duplicates in user folder and tag them with any needed tag.
+- [nextcloud-file-sync](#nextcloud-file-sync) - Do External Shares rescan only
+- [nextcloud-gotify-notifications](#nextcloud-gotify-notifications) - Read Nextcloud Notifications and push them to Gotify.
+- [nextcloud-hardlink-duplicates](#nextcloud-hardlink-duplicates) - Will create hardlinks to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
+- [nextcloud-preview](#nextcloud-preview) - Automate preview generation
+- [nextcloud-rsync-to-remote](#nextcloud-rsync-to-remote) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
+- [nextcloud-scripts-config.conf](#nextcloud-scripts-config) - Configuration file
+- [nextcloud-system-notification](#nextcloud-system-notification) - Get System Notifications into Nextcloud
+- [nextcloud-usage-report](#nextcloud-usage-report) - Generate report in cacti format
 
 ----
 
-- [Nextcloud Talk Bots](https://github.com/GAS85/nextcloud_scripts#NextcloudTalkBots)
-- [nextcloud-bot-links-list](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-links-list) - List for a Links Nextcloud Talk bot
-- [nextcloud-bot-links.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-linkssh) - Links Nextcloud Talk bot
-- [nextcloud-bot-rate-1-10.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-rate-1-10sh) - Nextcloud Talk bot to generate simple 1 to 10 rate
-- [nextcloud-bot-pass.sh](https://github.com/GAS85/nextcloud_scripts#nextcloud-bot-passsh) - Nextcloud Talk bot to generate random password
-
+- [Nextcloud Talk Bots](#NextcloudTalkBots)
+- [nextcloud-bot-links-list](#nextcloud-bot-links-list) - List for a Links Nextcloud Talk bot
+- [nextcloud-bot-links](#nextcloud-bot-links) - Links Nextcloud Talk bot
+- [nextcloud-bot-rate-1-10](#nextcloud-bot-rate-1-10) - Nextcloud Talk bot to generate simple 1 to 10 rate
+- [nextcloud-bot-pass](#nextcloud-bot-pass) - Nextcloud Talk bot to generate random password
 
 ## Installation
 
@@ -76,7 +75,7 @@ Login_UnknownUser:6 FileAccess_UnknownUser:0 FileWritten_UnknownUser:0 FileCreat
 ```
 
 ```bash
-Syntax is nextcloud-auditlog.sh.sh -h?Hv <user>
+Syntax is nextcloud-auditlog.sh -h?Hv <user>
 
 	-h, or ?	for this help
 	-H	will generate Human output
@@ -91,7 +90,7 @@ Syntax is nextcloud-auditlog.sh.sh -h?Hv <user>
 
 If you have antivirus installed, then try it. Perform `nextcloud.log` analyze and send notification to any user. Made to avoid [this Issue](https://github.com/nextcloud/files_antivirus/issues/152).
 
-### nextcloud-duplicates-tagger.sh
+### nextcloud-duplicates-tagger
 
 This script will search all duplicates in user folder and tag them with corresponding tag.
 Configuration:
@@ -108,7 +107,7 @@ Configuration:
 
 `NextCloudPath=/var/www/nextcloud` Path to nextcloud Folder. Data folder will be retrieved automatically from the config file.
 
-### nextcloud-file-sync.sh
+### nextcloud-file-sync
 
 Performs External Shares rescan only that will save a lot of time in compare to scan whole nextcloud. Basically, it works out from the box. Only that you must check you nextcloud path, log path and create a log file for `php occ` output.
 Will do external ONLY shares rescan for nextcloud.
@@ -136,19 +135,25 @@ Will generate NC log output:
 
 I have had some issues (like described here https://help.nextcloud.com/t/occ-files-cleanup-does-it-delete-the-db-table-entries-of-the-missing-files/20253) in older NC versions, so I added workaround from line 60 till 67 as `files:cleanup` command, nut sure if it is needed now, but it does not harm anything.
 
-### nextcloud-gotify-notifications.sh
+### nextcloud-gotify-notifications
 
-This script will read Nextcloud Notifications via API call and push them to [Gotify server](https://github.com/gotify/server). If you do not see any notifications, try to delete lock file, specifyed in `LOCKFILE`
+This script will read Nextcloud Notifications via API call and push them to [Gotify server](https://github.com/gotify/server). If you do not see any notifications, try to delete lock file, specified in `LOCKFILE`
 
 Please create Application password for this script.
 
 In Gotify Server you have to create an Application and provide API Token to script.
 
-### nextcloud-hardlink-duplicates.sh
+There are 2 modes: `push` and `sync`.
+
+- In case of `push` Notifications from Nextcloud will be pushed to Gotify if you delete notification in Nextcloud or Gotify there will be no reaction.
+- In case of `sync` you will have synced notifications stage between both Nextcloud and Gotify, Notification delete in Gotify will cause deletion of this Notification in Nextcloud and opposite.
+In Gotify Server you must create a Client Token and provide it to script additionally.
+
+### nextcloud-hardlink-duplicates
 
 In order to reduce HDD space being used, this script will create hardlinks to duplicated files together with [rdfind](https://github.com/pauldreik/rdfind).
 
-### nextcloud-preview.sh
+### nextcloud-preview
 
 This script avoids parallel Preview Jobs and write execution time to the logs.
 
@@ -158,7 +163,7 @@ Will generate NC log output:
 
 ![](https://help.nextcloud.com/uploads/default/original/2X/7/7a6efcf4700e06457f9bf0eab634eb9f4e012943.png)
 
-### nextcloud-rsync-to-remote.sh
+### nextcloud-rsync-to-remote
 
 This script will do backup of Nextcloud folders via RSYNC to remote machine with SSH Key authentication. You can edit key `--exclude=FolderToExclude` to exclude folders such as:
 
@@ -170,7 +175,11 @@ This script will do backup of Nextcloud folders via RSYNC to remote machine with
 
 Or you can even combine and do rsync into archive (with remote authentication via SSH Key) if you set `CompressToArchive=true`.
 
-### nextcloud-system-notification.sh
+### nextcloud-scripts-config
+
+This is Central Configutation file that will decrease configuration effort.
+
+### nextcloud-system-notification
 
 As per [this](https://help.nextcloud.com/t/howto-get-notifications-for-system-updates/10299) tread I added simple script that will do check if updates or reboot is required and show it as NC notification. Works on Ubuntu 16.04+.
 
@@ -178,7 +187,7 @@ As per [this](https://help.nextcloud.com/t/howto-get-notifications-for-system-up
 
 You only must specify user from the Administrator group to get notifications via  `USER="admin"`
 
-### nextcloud-usage-report.sh
+### nextcloud-usage-report
 
 This script works with https://apps.nextcloud.com/apps/user_usage_report
 
@@ -191,7 +200,7 @@ storage_all, storage_used, shares_new, files_all, files_new, files_read
 
 ## Nextcloud Talk Bots
 
-### nextcloud-bot-links.sh
+### nextcloud-bot-links
 
 This script work as a Talk Chat bot. Will return you useful links specified in `nextcloud-links-list`.
 To add bot simply execute:
@@ -230,7 +239,7 @@ Your notes are under https://domain/index.php/apps/notes
 
 Basically, you can put in this list whatever to be shown as one line per request.
 
-### nextcloud-bot-rate-1-10.sh
+### nextcloud-bot-rate-1-10
 
 This script work as a Talk Chat bot. Will return you (girls) rate from 1 till 10.
 To add bot simply execute:
@@ -248,7 +257,7 @@ Output example:
 9
 ```
 
-### nextcloud-bot-pass.sh
+### nextcloud-bot-pass
 
 This script work as a Talk Chat bot. Will return you random generated 16 (or any length) Characters password.
 To add bot simply execute:
@@ -257,7 +266,7 @@ To add bot simply execute:
 sudo -u www-data php /var/www/nextcloud/occ talk:command:add pass pass "/usr/local/bin/nextcloud-bot-pass.sh {ARGUMENTS}" 1 3
 ```
 
-Please make sure that you put 1 as `response` argument, this will ensure that only requester can see the output. For more information please follow https://nextcloud-talk.readthedocs.io/en/latest/commands/
+Please make sure that you put 1 as `response` argument, this will ensure that only requester can see the output. For more information, please follow https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
 Output example:
 
