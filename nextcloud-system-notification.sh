@@ -20,7 +20,13 @@ PHP=/usr/bin/php
 
 ################
 
-. /etc/nextcloud-scripts-config.conf
+CentralConfigFile="/etc/nextcloud-scripts-config.conf"
+
+if [ -f "$CentralConfigFile" ]; then
+
+	. $CentralConfigFile
+
+fi
 
 OPTIONS="notification:generate"
 

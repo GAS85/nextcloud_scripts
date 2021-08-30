@@ -17,7 +17,13 @@ LOCKFILE=/tmp/nextcloud_usagereport
 TMPFILE=/tmp/nextcloud_usagereport_tmp
 PHP=/usr/bin/php
 
-. nextcloud-scripts-config.conf
+CentralConfigFile="/etc/nextcloud-scripts-config.conf"
+
+if [ -f "$CentralConfigFile" ]; then
+
+	. $CentralConfigFile
+
+fi
 
 [ -f "$LOCKFILE" ] && exit
 touch $LOCKFILE

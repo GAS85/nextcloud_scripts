@@ -26,7 +26,13 @@ PHP=/usr/bin/php
 
 ### Please do not touch under this line ###
 
-. /etc/nextcloud-scripts-config.conf
+CentralConfigFile="/etc/nextcloud-scripts-config.conf"
+
+if [ -f "$CentralConfigFile" ]; then
+
+	. $CentralConfigFile
+
+fi
 
 LOCKFILE=/tmp/nextcloud_preview
 LvL=1

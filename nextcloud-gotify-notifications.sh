@@ -25,7 +25,13 @@ NotificationsSyncMode=push
 TMPFILE=/tmp/nextcloud-gotify-notifications
 LOCKFILE=/tmp/nextcloud-gotify-notifications.lock
 
-. /etc/nextcloud-scripts-config.conf
+CentralConfigFile="/etc/nextcloud-scripts-config.conf"
+
+if [ -f "$CentralConfigFile" ]; then
+
+	. $CentralConfigFile
+
+fi
 
 ### END OF CONFIGURATION ###
 

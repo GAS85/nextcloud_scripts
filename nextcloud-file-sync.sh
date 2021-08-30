@@ -20,7 +20,13 @@ CACHE=0
 	# Your PHP location
 PHP=/usr/bin/php
 
-. /etc/nextcloud-scripts-config.conf
+CentralConfigFile="/etc/nextcloud-scripts-config.conf"
+
+if [ -f "$CentralConfigFile" ]; then
+
+	. $CentralConfigFile
+
+fi
 
 # Live it like this
 OPTIONS="files:scan"

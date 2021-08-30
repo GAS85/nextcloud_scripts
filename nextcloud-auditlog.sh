@@ -14,7 +14,13 @@ lastMinutes=5
 
 tempfile=/tmp/nextcloud_auditlog_$(date +"%M-%N").tmp
 
-. /etc/nextcloud-scripts-config.conf
+CentralConfigFile="/etc/nextcloud-scripts-config.conf"
+
+if [ -f "$CentralConfigFile" ]; then
+
+	. $CentralConfigFile
+
+fi
 
 show_help () {
 

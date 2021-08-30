@@ -21,7 +21,6 @@
 - [nextcloud-hardlink-duplicates](#nextcloud-hardlink-duplicates) - Will create hardlinks to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
 - [nextcloud-preview](#nextcloud-preview) - Automate preview generation
 - [nextcloud-rsync-to-remote](#nextcloud-rsync-to-remote) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
-- [nextcloud-scripts-config.conf](#nextcloud-scripts-config) - Configuration file
 - [nextcloud-system-notification](#nextcloud-system-notification) - Get System Notifications into Nextcloud
 - [nextcloud-usage-report](#nextcloud-usage-report) - Generate report in cacti format
 
@@ -57,7 +56,7 @@ Run it under _nextcloud user_ (for me it is www-data).
 
 `nextcloud-scripts-config.conf` is a central configuration file, very handy if you are using more than one script from this bunch. Options are:
 
-* Your NC OCC Command path e.g. `Command=/var/www/nextcloud/occ`
+- Your NC OCC Command path e.g. `Command=/var/www/nextcloud/occ`
 - Your NC log file path e.g. `LogFile=/var/www/nextcloud/data/nextcloud.log`
 - Your log file path for other output if needed e.g. `CronLogFile=/var/log/nextvloud-cron.log`
 - Your PHP location if different from default e.g. `PHP=/usr/bin/php`
@@ -174,10 +173,6 @@ This script will do backup of Nextcloud folders via RSYNC to remote machine with
 * `*.ocTransferId*.part` exclude partly uploaded data from backup.
 
 Or you can even combine and do rsync into archive (with remote authentication via SSH Key) if you set `CompressToArchive=true`.
-
-### nextcloud-scripts-config
-
-This is Central Configutation file that will decrease configuration effort.
 
 ### nextcloud-system-notification
 

@@ -15,6 +15,14 @@ appdata=true
 
 LOCKFILE=/tmp/nextcloud-hardlink-duplicates.tmp
 
+CentralConfigFile="/etc/nextcloud-scripts-config.conf"
+
+if [ -f "$CentralConfigFile" ]; then
+
+	. $CentralConfigFile
+
+fi
+
 # Check if OCC is reachable
 if [ ! -w "$Command" ]; then
 	echo "ERROR - Command $Command not found. Make sure that path is correct."
