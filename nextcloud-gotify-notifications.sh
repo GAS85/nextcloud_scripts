@@ -27,7 +27,7 @@ LOCKFILE=/tmp/nextcloud-gotify-notifications.lock
 
 CentralConfigFile="/etc/nextcloud-scripts-config.conf"
 
-if [ -f "$CentralConfigFile" ]; then
+if [[ -f "$CentralConfigFile" ]]; then
 
 	. $CentralConfigFile
 
@@ -40,7 +40,7 @@ ncAPI="https://$NextCloudUser:$NextCloudPassword@$NextCloudDomain/ocs/v2.php/app
 
 curlConfiguration="-fsS -m 10 --retry 5"
 
-if [ ! -f "$LOCKFILE" ]; then
+if [[ ! -f "$LOCKFILE" ]]; then
 
 	echo "0" > $LOCKFILE
 
@@ -79,7 +79,7 @@ if [[ "$(tail -n 1 $TMPFILE.next)" -ge "$lastSeen" ]]; then
 			fi
 
 			# Send notification to Gotify
-			curl $curlConfiguration -X POST "https://$GotifyDomain/message?token=$GotifyApplicationToken" -F "title=$title" -F "message=$message" >> /dev/null
+			curl $curlConfiguration -X POST "https://$GotifyDomain/message?token=$GotifyApplicationToken" -F "title=\"$title\"" -F "message=\"$message\"" >> /dev/null
 
 			# Remember last seen message ID from the Nextcloud
 			echo $ID > $LOCKFILE
@@ -99,7 +99,7 @@ if [[ "$NotificationsSyncMode" == "sync"  ]]; then
 	cat $TMPFILE.next $TMPFILE.got | sort | uniq -u > $TMPFILE.uniq
 
 	# Stop if no difference was found
-	[ -s $TMPFILE.uniq ] || exit 0
+	[[ -s $TMPFILE.uniq ]] || exit 0
 
 	# Delete Notifications from Nextcloud if it was deleted in Gotify
 	COUNT=0;

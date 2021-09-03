@@ -1,36 +1,37 @@
 # nextcloud_scripts
 
-[[TOC]]
-
 ----
+
 * for Apache A+ SSL configuration check https://gist.github.com/GAS85/42a5469b32659a0aecc60fa2d4990308
 * for Apache HTTP2 enablement check https://gist.github.com/GAS85/8dadbcb3c9a7ecbcb6705530c1252831
+
 ----
 
 ## Quick overview
 
-- [nextcloud-configuration.conf](#configuration) - Central place for configuration.
+* [nextcloud-configuration.conf](#configuration) - Central place for configuration.
 
 ----
 
-- [nextcloud-auditlog](#nextcloud-auditlog) - Perform Audit log analyze for a given time and output in cacti format
-- [nextcloud-av-notification](#nextcloud-av-notification) - Perform nextcloud log analyze and send notification to any user
-- [nextcloud-duplicates-tagger](#nextcloud-duplicates-tagger) - Will find all duplicates in user folder and tag them with any needed tag.
-- [nextcloud-file-sync](#nextcloud-file-sync) - Do External Shares rescan only
-- [nextcloud-gotify-notifications](#nextcloud-gotify-notifications) - Read Nextcloud Notifications and push them to Gotify.
-- [nextcloud-hardlink-duplicates](#nextcloud-hardlink-duplicates) - Will create hardlinks to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
-- [nextcloud-preview](#nextcloud-preview) - Automate preview generation
-- [nextcloud-rsync-to-remote](#nextcloud-rsync-to-remote) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
-- [nextcloud-system-notification](#nextcloud-system-notification) - Get System Notifications into Nextcloud
-- [nextcloud-usage-report](#nextcloud-usage-report) - Generate report in cacti format
+* [nextcloud-auditlog](#nextcloud-auditlog) - Perform Audit log analyze for a given time and output in cacti format
+* [nextcloud-av-notification](#nextcloud-av-notification) - Perform nextcloud log analyze and send notification to any user
+* [nextcloud-duplicates-tagger](#nextcloud-duplicates-tagger) - Will find all duplicates in user folder and tag them with any needed tag.
+* [nextcloud-file-sync](#nextcloud-file-sync) - Do External Shares rescan only
+* [nextcloud-gotify-activity](#nextcloud-gotify-activity) - Read Nextcloud Activity RSS and push updates to Gotify.
+* [nextcloud-gotify-notifications](#nextcloud-gotify-notifications) - Read Nextcloud Notifications and push or sync them to Gotify.
+* [nextcloud-hardlink-duplicates](#nextcloud-hardlink-duplicates) - Will create hardlinks to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
+* [nextcloud-preview](#nextcloud-preview) - Automate preview generation
+* [nextcloud-rsync-to-remote](#nextcloud-rsync-to-remote) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
+* [nextcloud-system-notification](#nextcloud-system-notification) - Get System Notifications into Nextcloud
+* [nextcloud-usage-report](#nextcloud-usage-report) - Generate report in cacti format
 
 ----
 
-- [Nextcloud Talk Bots](#NextcloudTalkBots)
-- [nextcloud-bot-links-list](#nextcloud-bot-links-list) - List for a Links Nextcloud Talk bot
-- [nextcloud-bot-links](#nextcloud-bot-links) - Links Nextcloud Talk bot
-- [nextcloud-bot-rate-1-10](#nextcloud-bot-rate-1-10) - Nextcloud Talk bot to generate simple 1 to 10 rate
-- [nextcloud-bot-pass](#nextcloud-bot-pass) - Nextcloud Talk bot to generate random password
+* [Nextcloud Talk Bots](#NextcloudTalkBots)
+* [nextcloud-bot-links-list](#nextcloud-bot-links-list) - List for a Links Nextcloud Talk bot
+* [nextcloud-bot-links](#nextcloud-bot-links) - Links Nextcloud Talk bot
+* [nextcloud-bot-rate-1-10](#nextcloud-bot-rate-1-10) - Nextcloud Talk bot to generate simple 1 to 10 rate
+* [nextcloud-bot-pass](#nextcloud-bot-pass) - Nextcloud Talk bot to generate random password
 
 ## Installation
 
@@ -56,10 +57,10 @@ Run it under _nextcloud user_ (for me it is www-data).
 
 `nextcloud-scripts-config.conf` is a central configuration file, very handy if you are using more than one script from this bunch. Options are:
 
-- Your NC OCC Command path e.g. `Command=/var/www/nextcloud/occ`
-- Your NC log file path e.g. `LogFile=/var/www/nextcloud/data/nextcloud.log`
-- Your log file path for other output if needed e.g. `CronLogFile=/var/log/nextvloud-cron.log`
-- Your PHP location if different from default e.g. `PHP=/usr/bin/php`
+* Your NC OCC Command path e.g. `Command=/var/www/nextcloud/occ`
+* Your NC log file path e.g. `LogFile=/var/www/nextcloud/data/nextcloud.log`
+* Your log file path for other output if needed e.g. `CronLogFile=/var/log/nextvloud-cron.log`
+* Your PHP location if different from default e.g. `PHP=/usr/bin/php`
 
 ## Scripts
 
@@ -76,11 +77,11 @@ Login_UnknownUser:6 FileAccess_UnknownUser:0 FileWritten_UnknownUser:0 FileCreat
 ```bash
 Syntax is nextcloud-auditlog.sh -h?Hv <user>
 
-	-h, or ?	for this help
-	-H	will generate Human output
-	-c	will generate clean output with only valid data
-	-n	will generate information about nonregistered users, e.g. CLI User, or user trying to login with wrong name, etc.
-	<user>	will generate output only for a particular user. Default - all users will be fetched from the nextcloud
+    -h, or ? for this help
+    -H  will generate Human output
+    -c  will generate clean output with only valid data
+    -n  will generate information about nonregistered users, e.g. CLI User, or user trying to login with wrong name, etc.
+    <user> will generate output only for a particular user. Default - all users will be fetched from the nextcloud
 ```
 
 **TODO** Adjust for common config file and set limit to the users amount.
@@ -100,9 +101,9 @@ Configuration:
 
 `User="user"` Username
 
-`password="xxxxx-xxxxx-xxxxxx" #Password, please create application password under `...index.php/settings/user/security`
+`password="xxxxx-xxxxx-xxxxxx"` Password, please create application password under .../index.php/settings/user/security
 
-`LogLvL=Info` Log Level could be: none|Info
+`LogLvL=Info` Log Level could be: `none`|`Info`
 
 `NextCloudPath=/var/www/nextcloud` Path to nextcloud Folder. Data folder will be retrieved automatically from the config file.
 
@@ -130,9 +131,17 @@ sudo -u www-data ./nextcloud-file-sync.sh -all
 ```
 
 Will generate NC log output:
-![](https://help.nextcloud.com/uploads/default/original/2X/b/bfc2a6ad6de3d7af5d287776e87ffbcd5d6fcc18.png)
+![Nextcloud Log entry example](./img/nextcloud_log.png)
 
 I have had some issues (like described here https://help.nextcloud.com/t/occ-files-cleanup-does-it-delete-the-db-table-entries-of-the-missing-files/20253) in older NC versions, so I added workaround from line 60 till 67 as `files:cleanup` command, nut sure if it is needed now, but it does not harm anything.
+
+### nextcloud-gotify-activity
+
+This script will read Nextcloud Activity RSS via API call and push them to [Gotify server](https://github.com/gotify/server). If you do not see any new activities, try to delete lock file, specified in `LOCKFILE`
+
+Please create Application password for this script.
+
+![Gotify Activity Screenshot](./img/Gotify_activity.png)
 
 ### nextcloud-gotify-notifications
 
@@ -144,9 +153,11 @@ In Gotify Server you have to create an Application and provide API Token to scri
 
 There are 2 modes: `push` and `sync`.
 
-- In case of `push` Notifications from Nextcloud will be pushed to Gotify if you delete notification in Nextcloud or Gotify there will be no reaction.
-- In case of `sync` you will have synced notifications stage between both Nextcloud and Gotify, Notification delete in Gotify will cause deletion of this Notification in Nextcloud and opposite.
+* In case of `push` Notifications from Nextcloud will be pushed to Gotify if you delete notification in Nextcloud or Gotify there will be no reaction.
+* In case of `sync` you will have synced notifications stage between both Nextcloud and Gotify, Notification delete in Gotify will cause deletion of this Notification in Nextcloud and opposite.
 In Gotify Server you must create a Client Token and provide it to script additionally.
+
+![Gotify Notifications Screenshot](./img/Gotify_notifications.png)
 
 ### nextcloud-hardlink-duplicates
 
@@ -160,7 +171,7 @@ Since last update, Application will detect if it is already run and will not be 
 
 Will generate NC log output:
 
-![](https://help.nextcloud.com/uploads/default/original/2X/7/7a6efcf4700e06457f9bf0eab634eb9f4e012943.png)
+![Nextcloud Log output example](./img/nextcloud_log.png)
 
 ### nextcloud-rsync-to-remote
 
@@ -178,7 +189,7 @@ Or you can even combine and do rsync into archive (with remote authentication vi
 
 As per [this](https://help.nextcloud.com/t/howto-get-notifications-for-system-updates/10299) tread I added simple script that will do check if updates or reboot is required and show it as NC notification. Works on Ubuntu 16.04+.
 
-![](https://help.nextcloud.com/uploads/default/original/2X/9/96a5632b82ecdc46251cc4b42cad8be36086b518.png)
+![Nextcloud Notification Example](./img/nextcloud_notificaion.png)
 
 You only must specify user from the Administrator group to get notifications via  `USER="admin"`
 
