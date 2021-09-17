@@ -46,6 +46,13 @@ if [[ ! -f "$LOCKFILE" ]]; then
 
 fi
 
+# RSS XML Reader as per https://www.linuxjournal.com/content/parsing-rss-news-feed-bash-script
+
+xmlgetnext () {
+   local IFS='>'
+   read -d '<' TAG VALUE
+}
+
 # Collect Nextcloud Notifications IDs
 curl $curlConfiguration "$ncAPI" | grep -oP "(?<=<notification_id>)[^<]+" | sort > $TMPFILE.next
 
@@ -54,38 +61,46 @@ lastSeen=$(tail -n 1 $LOCKFILE)
 # Push Notifications to Gotify
 if [[ "$(tail -n 1 $TMPFILE.next)" -ge "$lastSeen" ]]; then
 
-	COUNT=0;
-	for ID in `cat $TMPFILE.next`; do
+	curl $curlConfiguration "$ncAPI" | while xmlgetnext ; do
+		case $TAG in
+			'element')
+				notification_id=''
+				subject=''
+				message=''
+				;;
+			'notification_id')
+				notification_id="$VALUE"
+				;;
+			'subject')
+				title="$VALUE"
+				;;
+			'message')
+				message="$VALUE"
+				;;
+			'/element')
 
-		((COUNT++));
+				if [[ "$notification_id" -gt "$lastSeen" ]]; then
 
-		if [[ "$ID" -gt "$lastSeen" ]]; then
+					# Add message body if was not provided as it is required for Gotify
+					if [[ "$message" == "" ]]; then
 
-			# Get particular Notification Message from Nextcloud
-			curl $curlConfiguration "$ncAPI/$ID" | grep -E "<subject>|<message>" | sed '1d' > $LOCKFILE
+						message="Nextcloud notification id $notification_id"
 
-			title=$(grep -oPm1 "(?<=<subject>)[^<]+" $LOCKFILE)
-			message=$(grep -oPm1 "(?<=<message>)[^<]+" $LOCKFILE)
+					else
 
-			# Add message body if was not provided as it is required for Gotify
-			if [[ "$message" == "" ]]; then
+						message="$message"$'\n'"Nextcloud notification id $notification_id"
 
-				message="Nextcloud notification id $ID"
+					fi
 
-			else
+					# Send notification to Gotify
+					curl $curlConfiguration -X POST "https://$GotifyDomain/message?token=$GotifyApplicationToken" -F "title=$title" -F "message=$message" >> /dev/null
 
-				message="$message"$'\n'"Nextcloud notification id $ID"
+					# Remember last seen message ID from the Nextcloud
+					echo $notification_id > $LOCKFILE
 
-			fi
-
-			# Send notification to Gotify
-			curl $curlConfiguration -X POST "https://$GotifyDomain/message?token=$GotifyApplicationToken" -F "title=\"$title\"" -F "message=\"$message\"" >> /dev/null
-
-			# Remember last seen message ID from the Nextcloud
-			echo $ID > $LOCKFILE
-
-		fi
-
+				fi
+			;;
+			esac
 	done
 
 fi
@@ -103,14 +118,14 @@ if [[ "$NotificationsSyncMode" == "sync"  ]]; then
 
 	# Delete Notifications from Nextcloud if it was deleted in Gotify
 	COUNT=0;
-	for ID in `cat $TMPFILE.uniq`; do
+	for notification_id in `cat $TMPFILE.uniq`; do
 
 		((COUNT++));
 
 		# Check if message is still in Nextcloud before to delete it
 		if [[ ! -z "$(cat $TMPFILE.next $TMPFILE.uniq | sort | uniq -d)" ]]; then
 
-			curl $curlConfiguration -H "OCS-APIREQUEST: true" -X DELETE "$ncAPI/$ID" >> /dev/null
+			curl $curlConfiguration -H "OCS-APIREQUEST: true" -X DELETE "$ncAPI/$notification_id" >> /dev/null
 
 		fi
 
@@ -121,11 +136,11 @@ if [[ "$NotificationsSyncMode" == "sync"  ]]; then
 
 	# Delete Notifications from Gotify if it was deleted in Nextcloud
 	COUNT=0;
-	for ID in `cat $TMPFILE.uniq`; do
+	for notification_id in `cat $TMPFILE.uniq`; do
 
 		((COUNT++));
 		# Get corresponding Gotify Notification ID
-		toDelete=$(grep -B 1 "Nextcloud notification id $ID" $TMPFILE.got | grep -oP '"id" :\s+\K\w+' | head -n 1)
+		toDelete=$(grep -B 1 "Nextcloud notification id $notification_id" $TMPFILE.got | grep -oP '"id" :\s+\K\w+' | head -n 1)
 
 		if [[ ! -z "$toDelete" ]]; then
 
