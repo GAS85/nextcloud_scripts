@@ -11,6 +11,7 @@ tagName=duplicate
 NextcloudURL="https://yourFQDN/nextcloud"
 user="user"
 password="xxxxx-xxxxx-xxxxxx"
+ignoreCertificate="false"
 
 # Log Level: none|Info
 LogLvL=Info
@@ -24,7 +25,15 @@ NextCloudPath=/var/www/nextcloud
 
 LOCKFILE=/tmp/nextcloud-duplicates-tagger.tmp
 
-curlOptions=(-s -m 10 -u $user:$password)
+if [[ "$ignoreCertificate" == "false" ]]; then
+
+	curlOptions=(-s -m 10 -u $user:$password)
+
+else
+
+	curlOptions=(-s -k -m 10 -u $user:$password)
+
+fi
 
 # Check if config.php exist
 [[ -r "$NextCloudPath"/config/config.php ]] || {
