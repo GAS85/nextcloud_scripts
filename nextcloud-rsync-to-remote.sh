@@ -13,22 +13,22 @@ RemoteBackupFolder=/path/to/backup
 NextCloudPath=/var/www/nextcloud
 
 # Folder and files to be excluded from backup.
-# - data/updater* exclude updater backups and dowloads
+# - data/updater* exclude updater backups and downloads
 # - *.ocTransferId*.part exclude partly uploaded files
 #
 # This is reasonable "must have", everything below is just to save place:
 #
-# - data/appdata*/preview exclude Previews - they could be newle generated
-# - data/*/files_trashbin/ exclude users trashbins
+# - data/appdata*/preview exclude Previews - they could be newly generated
+# - data/*/files_trashbin/ exclude users trashbin
 # - data/*/files_versions/ exclude users files Versions
 
 excludeFromBackup="--exclude=data/updater*\
  --exclude=*.ocTransferId*.part\
  --exclude=data/appdata*/preview"
 
-# Compress to needs to have archivemount and sshfs installed.
+# Compress to needs to have archive mount and sshfs installed.
 CompressToArchive=false
-WhereToMount=/mnt/remoteSystem # Needs to be set if CompressToArchive is true
+WhereToMount=/mnt/remoteSystem  # Needs to be set if CompressToArchive is true
 RemoteArchiveName=backup.tar.gz # Needs to be set if CompressToArchive is true
 
 ##############################################################################

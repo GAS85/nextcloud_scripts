@@ -29,10 +29,10 @@ fi
 touch $LOCKFILE
 
 #get usage information
-$PHP $Command $OPTIONS $1 > $LOCKFILE
+$PHP $Command $OPTIONS $1 >$LOCKFILE
 
 #generate log in Cacti format
-awk -F, '{print $1"storage_all:"$3" " $1"storage_used:"$4" " $1"files_all:"$5" " $1"shares_new:"$6" " $1"files_new:"$7" " $1"files_read:"$8" "}' $LOCKFILE | sed 's/"//g' | sed ':a;N;$!ba;s/\n/ /g' >> $TMPFILE
+awk -F, '{print $1"storage_all:"$3" " $1"storage_used:"$4" " $1"files_all:"$5" " $1"shares_new:"$6" " $1"files_new:"$7" " $1"files_read:"$8" "}' $LOCKFILE | sed 's/"//g' | sed ':a;N;$!ba;s/\n/ /g' >>$TMPFILE
 
 cat $TMPFILE
 

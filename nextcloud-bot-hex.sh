@@ -9,61 +9,61 @@
 # sudo -u www-data php /var/www/nextcloud/occ talk:command:add ascii ascii "/usr/local/bin/nextcloud-bot-hex.sh --ascii {ARGUMENTS}" 1 3
 # OR
 # sudo -u www-data php /var/www/nextcloud/occ talk:command:add hex hex "/usr/local/bin/nextcloud-bot-hex.sh {ARGUMENTS}" 1 3
-# in This case only 1 command will do convertion hex2ascii and ascii2hex
-# 
-# More infor under https://nextcloud-talk.readthedocs.io/en/latest/commands/
+# in This case only 1 command will do conversion hex2ascii and ascii2hex
+#
+# More info under https://nextcloud-talk.readthedocs.io/en/latest/commands/
 
 length=16
 
 while test $# -gt 0; do
 	case "$1" in
+	--help)
+		# in case script was added as 1 command via
+		# sudo -u www-data php /var/www/nextcloud/occ talk:command:add hex hex "/usr/local/bin/nextcloud-bot-hex.sh {ARGUMENTS}" 1 3
+		echo "/hex - A Nextcloud Talk chat wrapper hex to ASCII and backwards"
+		echo " "
+		echo "Simple execution: /hex 0x21"
+		echo "Complex execution: /hex 0x22.0x5a"
+		echo "Symbol should start with 0x, Separated by '.' dots, or ' ' spaces."
+		echo " "
+		echo "Simple execution: /hex text"
+		exit 0
+		;;
+
+	*)
+		case "$2" in
 		--help)
-			# in case script was added as 1 command via
-			# sudo -u www-data php /var/www/nextcloud/occ talk:command:add hex hex "/usr/local/bin/nextcloud-bot-hex.sh {ARGUMENTS}" 1 3
-			echo "/hex - A Nextcloud Talk chat wrapper hex to ASCII and backwards"
-			echo " "
-			echo "Simple execution: /hex 0x21"
-			echo "Complex execution: /hex 0x22.0x5a"
-			echo "Symbol should start with 0x, Separated by '.' dots, or ' ' spaces."
-			echo " "
-			echo "Simple execution: /hex text"
-			exit 0
+
+			if [ "$1" = "--hex" ]; then
+				echo "/hex - A Nextcloud Talk chat wrapper hex to ASCII"
+				echo " "
+				echo "for ASCII to hex see /ascii"
+				echo " "
+				echo "Simple execution: /hex 0x21"
+				echo "Complex execution: /hex 0x22.0x5a"
+				echo "First Symbol should start with 0x, Separated by '.' dots, or ' ' spaces"
+				exit 0
+			fi
+
+			if [ "$1" = "--ascii" ]; then
+				echo "/ascii - A Nextcloud Talk chat wrapper ASCII to hex"
+				echo " "
+				echo "for hex to ASCII see /hex"
+				echo " "
+				echo "Simple execution: /ascii Letter"
+				echo "Simple execution: /ascii Some Text"
+				exit 0
+			fi
 			;;
 
 		*)
-		case "$2" in
-			--help)
-
-				if [ "$1" = "--hex" ]; then
-					echo "/hex - A Nextcloud Talk chat wrapper hex to ASCII"
-					echo " "
-					echo "for ASCII to hex see /ascii"
-					echo " "
-					echo "Simple execution: /hex 0x21"
-					echo "Complex execution: /hex 0x22.0x5a"
-					echo "First Symbol should start with 0x, Separated by '.' dots, or ' ' spaces"
-					exit 0
-				fi
-
-				if [ "$1" = "--ascii" ]; then
-					echo "/ascii - A Nextcloud Talk chat wrapper ASCII to hex"
-					echo " "
-					echo "for hex to ASCII see /hex"
-					echo " "
-					echo "Simple execution: /ascii Letter"
-					echo "Simple execution: /ascii Some Text"
-					exit 0
-				fi
-				;;
-
-			*)
 			break
 			;;
 		esac
 	esac
 done
 
-hex2ascii () {
+hex2ascii() {
 
 	echo "$userInput"
 	echo "$userInput" | xxd -r
@@ -72,7 +72,7 @@ hex2ascii () {
 
 }
 
-ascii2hex () {
+ascii2hex() {
 
 	echo "$userInput" | xxd -g 1 -u
 	echo

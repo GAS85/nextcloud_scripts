@@ -1,5 +1,5 @@
 #!/bin/bash
- 
+
 # By Georgiy Sitnikov.
 #
 # AS-IS without any warranty
@@ -22,9 +22,9 @@ if [ -f "$CentralConfigFile" ]; then
 
 fi
 
-show_help () {
+show_help() {
 
-    echo "This script will fetch data from the Nextclud audit.log and make it Human or Cacti readable.
+	echo "This script will fetch data from the Nextclud audit.log and make it Human or Cacti readable.
 Syntax is nextcloud-auditlog.sh -h?Hcan <user>
 
     -h, or ?  for this help
@@ -32,41 +32,41 @@ Syntax is nextcloud-auditlog.sh -h?Hcan <user>
     -c        will generate clean output with only valid data
     -a        will generate summary over all users
     -n        will generate information about nonregistered users, e.g. CLI User, or user trying to login with wrong name, etc.
-    <user>    will generate output only for a particluar user. Default - all users will be fetched from the nextcloud
+    <user>    will generate output only for a particular user. Default - all users will be fetched from the nextcloud
 
 By Georgiy Sitnikov."
 
 }
 
-fetchLog () {
+fetchLog() {
 
-	awk -v d1=$dateFrom -v d2=$dateTo -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LogFile" > $tempfile
+	awk -v d1=$dateFrom -v d2=$dateTo -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LogFile" >$tempfile
 
 }
 
-createOutput () {
+createOutput() {
 
 	if [ "$overallUsers" = 1 ]; then
 
-		echo "Login:$(grep "Login" $tempfile | wc -l)" >> $tempfile.output
-		echo "FileAccess:$(grep "File accessed" $tempfile | wc -l)" >> $tempfile.output
-		echo "FileWritten:$(grep "File written" $tempfile | wc -l)" >> $tempfile.output
-		echo "FileCreated:$(grep "File created" $tempfile | wc -l)" >> $tempfile.output
-		echo "FileDeleted:$(grep "was deleted" $tempfile | wc -l)" >> $tempfile.output
-		echo "New_Share:$(grep "has been shared" $tempfile | wc -l)" >> $tempfile.output
-		echo "Share_access:$(grep "has been accessed" $tempfile | wc -l)" >> $tempfile.output
-		echo "Preview_access:$(grep "Preview accessed" $tempfile | wc -l)" >> $tempfile.output
+		echo "Login:$(grep "Login" $tempfile | wc -l)" >>$tempfile.output
+		echo "FileAccess:$(grep "File accessed" $tempfile | wc -l)" >>$tempfile.output
+		echo "FileWritten:$(grep "File written" $tempfile | wc -l)" >>$tempfile.output
+		echo "FileCreated:$(grep "File created" $tempfile | wc -l)" >>$tempfile.output
+		echo "FileDeleted:$(grep "was deleted" $tempfile | wc -l)" >>$tempfile.output
+		echo "New_Share:$(grep "has been shared" $tempfile | wc -l)" >>$tempfile.output
+		echo "Share_access:$(grep "has been accessed" $tempfile | wc -l)" >>$tempfile.output
+		echo "Preview_access:$(grep "Preview accessed" $tempfile | wc -l)" >>$tempfile.output
 
 	else
 
-		echo "Login_$User:$(grep "$User" $tempfile | grep "Login" | wc -l)" >> $tempfile.output
-		echo "FileAccess_$User:$(grep "$User" $tempfile | grep "File accessed" | wc -l)" >> $tempfile.output
-		echo "FileWritten_$User:$(grep "$User" $tempfile | grep "File written" | wc -l)" >> $tempfile.output
-		echo "FileCreated_$User:$(grep "$User" $tempfile | grep "File created" | wc -l)" >> $tempfile.output
-		echo "FileDeleted_$User:$(grep "$User" $tempfile | grep "was deleted" | wc -l)" >> $tempfile.output
-		echo "New_Share_$User:$(grep "$User" $tempfile | grep "has been shared" | wc -l)" >> $tempfile.output
-		echo "Share_access_$User:$(grep "$User" $tempfile | grep "has been accessed" | wc -l)" >> $tempfile.output
-		echo "Preview_access_$User:$(grep "$User" $tempfile | grep "Preview accessed" | wc -l)" >> $tempfile.output
+		echo "Login_$User:$(grep "$User" $tempfile | grep "Login" | wc -l)" >>$tempfile.output
+		echo "FileAccess_$User:$(grep "$User" $tempfile | grep "File accessed" | wc -l)" >>$tempfile.output
+		echo "FileWritten_$User:$(grep "$User" $tempfile | grep "File written" | wc -l)" >>$tempfile.output
+		echo "FileCreated_$User:$(grep "$User" $tempfile | grep "File created" | wc -l)" >>$tempfile.output
+		echo "FileDeleted_$User:$(grep "$User" $tempfile | grep "was deleted" | wc -l)" >>$tempfile.output
+		echo "New_Share_$User:$(grep "$User" $tempfile | grep "has been shared" | wc -l)" >>$tempfile.output
+		echo "Share_access_$User:$(grep "$User" $tempfile | grep "has been accessed" | wc -l)" >>$tempfile.output
+		echo "Preview_access_$User:$(grep "$User" $tempfile | grep "Preview accessed" | wc -l)" >>$tempfile.output
 
 	fi
 
@@ -74,7 +74,7 @@ createOutput () {
 
 }
 
-cleanOutput () {
+cleanOutput() {
 
 	[[ "$clean" = 1 ]] && sed -i '/:0/d' $tempfile.output
 
@@ -86,7 +86,7 @@ customUser=$1
 
 while getopts "h?Hcan" opt; do
 	case "$opt" in
-	h|\?)
+	h | \?)
 		show_help
 		exit 0
 		;;
@@ -124,7 +124,10 @@ if [ "$overallUsers" = 1 ] && [ "$notUser" = 1 ]; then
 fi
 
 # Check if config.php exist
-[[ -r "$NextCloudPath"/config/config.php ]] || { echo >&2 "Error - config.php could not be read under "$NextCloudPath"/config/config.php. Please check the path and permissions"; exit 1; }
+[[ -r "$NextCloudPath"/config/config.php ]] || {
+	echo >&2 "Error - config.php could not be read under "$NextCloudPath"/config/config.php. Please check the path and permissions"
+	exit 1
+}
 
 # Fetch data directory place from the config file
 DataDirectory=$(grep datadirectory "$NextCloudPath"/config/config.php | cut -d "'" -f4)
@@ -139,12 +142,15 @@ else
 
 fi
 
-[[ -r "$LogFile" ]] || { echo >&2 "Error - audit.log could not be found under "$LogFile"."; exit 1; }
+[[ -r "$LogFile" ]] || {
+	echo >&2 "Error - audit.log could not be found under "$LogFile"."
+	exit 1
+}
 
-# Check if OCC is reacheble
+# Check if OCC is reachable
 if [ ! -w "$NextCloudPath/occ" ]; then
 
-	echo "ERROR - Command $NextCloudPath/occ not found. Make sure taht path is corrct."
+	echo "ERROR - Command $NextCloudPath/occ not found. Make sure that path is correct."
 	exit 1
 
 else
@@ -152,8 +158,8 @@ else
 	if [ "$EUID" -ne "$(stat -c %u $NextCloudPath/occ)" ]; then
 
 		echo "ERROR - Command $NextCloudPath/occ not executable for current user.
-	Make sure that user has right to execute it.
-	Script must be executed as $(stat -c %U $NextCloudPath/occ)."
+    Make sure that user has right to execute it.
+    Script must be executed as $(stat -c %U $NextCloudPath/occ)."
 
 		exit 1
 
@@ -164,9 +170,9 @@ fi
 # Get All Users List.
 if [ "$overallUsers" != 1 ] && [ "$notUser" != 1 ]; then
 
-	php $NextCloudPath/occ user:list | awk -F'[ ]' '{print $4}' | sed 's/://g' > $tempfile.list
+	php $NextCloudPath/occ user:list | awk -F'[ ]' '{print $4}' | sed 's/://g' >$tempfile.list
 
-	[[ "$human" = 1 ]] && echo "Geting All Users List:"
+	[[ "$human" = 1 ]] && echo "Getting All Users List:"
 
 	[[ "$human" = 1 ]] && cat "$tempfile.list"
 
@@ -221,7 +227,7 @@ if [ "$customUser" = "" ]; then
 
 			createOutput
 
-		done < $tempfile.list
+		done <$tempfile.list
 
 		#allUsers=$(cat $tempfile.list | tr '\n' '|' | sed '$ s/.$//')
 		#echo "Login_OTHERS:$(grep -vE "$allUsers" "$tempfile" | grep "Login" | wc -l)" >> $tempfile.output
@@ -237,9 +243,9 @@ if [ "$customUser" = "" ]; then
 
 else
 
-		User=$customUser
-		fetchLog | grep "$customUser" > $tempfile.output
-		createOutput | sed 's/_'$User'//g'
+	User=$customUser
+	fetchLog | grep "$customUser" >$tempfile.output
+	createOutput | sed 's/_'$User'//g'
 
 	if [ "$human" != 1 ]; then
 

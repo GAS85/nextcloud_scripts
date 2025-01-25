@@ -158,7 +158,7 @@ if [ "$CACHE" -eq "1" ]; then
 	messageToLog
 
 fi
-### FINISCH Cache cleanup
+### FINISH Cache cleanup
 
 rm $LOCKFILE
 

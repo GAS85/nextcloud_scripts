@@ -20,48 +20,48 @@ while test $# -gt 0; do
 
 	case "$1" in
 
-		--help)
-			echo "/time - A Nextcloud Talk chat Time zone wrapper for a https://worldtimeapi.org/timezones API"
-			echo " "
-			echo "Simple execution: /time"
-			echo "will give you current time on the server"
-			echo " "
-			echo "Complex execution: /time TomeZone"
-			echo "E.g: /time Europe/Berlin"
-			echo " "
-			echo "You can get a full list of time zones via command:"
-			echo "/time --list"
-			echo " "
-			echo "Or added exact Location to search:"
-			echo "/time --list Europe"
-			exit 0
-			;;
+	--help)
+		echo "/time - A Nextcloud Talk chat Time zone wrapper for a https://worldtimeapi.org/timezones API"
+		echo " "
+		echo "Simple execution: /time"
+		echo "will give you current time on the server"
+		echo " "
+		echo "Complex execution: /time TomeZone"
+		echo "E.g: /time Europe/Berlin"
+		echo " "
+		echo "You can get a full list of time zones via command:"
+		echo "/time --list"
+		echo " "
+		echo "Or added exact Location to search:"
+		echo "/time --list Europe"
+		exit 0
+		;;
 
-		*)
+	*)
 
-	break
+		break
 
-	;;
+		;;
 
-esac
+	esac
 
 done
 
-apiCall () {
- 
+apiCall() {
+
 	if [ -z "$call" ]; then
 
-		curl -s -m $maxDelay "http://worldtimeapi.org/api/timezone.txt" > $temp
+		curl -s -m $maxDelay "http://worldtimeapi.org/api/timezone.txt" >$temp
 
 	else
 
-		curl -s -m $maxDelay "http://worldtimeapi.org/api/timezone/"$call.txt > $temp
+		curl -s -m $maxDelay "http://worldtimeapi.org/api/timezone/"$call.txt >$temp
 
 	fi
 
 }
 
-APInewTry () {
+APInewTry() {
 
 	newTry=$call
 	call=""
@@ -78,9 +78,9 @@ APInewTry () {
 
 }
 
-checkForErrors () {
+checkForErrors() {
 
-	if [ "$(cat $temp| head -c 5)" = "Error" ]; then
+	if [ "$(cat $temp | head -c 5)" = "Error" ]; then
 
 		awk '{ $1 = "Uuups, some error is here:"; print $0 }' $temp
 
@@ -135,28 +135,28 @@ if [ "$first" = "--list" ]; then
 		#Check if multiple words are separated by spaces
 		case "$validInput" in
 
-			*\ * )
+		*\ *)
 
-				multipleInput=$(echo "$validInput" | tr ' ' '|')
-				#will display exact multiple match, or an error message
-				if ! grep -E "$multipleInput" "$temp"; then
+			multipleInput=$(echo "$validInput" | tr ' ' '|')
+			#will display exact multiple match, or an error message
+			if ! grep -E "$multipleInput" "$temp"; then
 
-					echo "Hmmm, nothing was found"
-					echo "Try /time --list to see all Locations, or /time --help for help"
+				echo "Hmmm, nothing was found"
+				echo "Try /time --list to see all Locations, or /time --help for help"
 
-				fi
+			fi
 
 			;;
 
-			*)
+		*)
 
-				#will display exact match, or an error message
-				if ! grep "$validInput" "$temp"; then
+			#will display exact match, or an error message
+			if ! grep "$validInput" "$temp"; then
 
-					echo "Hmmm, nothing was found"
-					echo "Try /time --list to see all Locations, or /time --help for help"
+				echo "Hmmm, nothing was found"
+				echo "Try /time --list to see all Locations, or /time --help for help"
 
-				fi
+			fi
 
 			;;
 		esac
