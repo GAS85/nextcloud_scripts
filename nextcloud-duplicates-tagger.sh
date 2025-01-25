@@ -24,19 +24,27 @@ NextCloudPath=/var/www/nextcloud
 
 LOCKFILE=/tmp/nextcloud-duplicates-tagger.tmp
 
+curlOptions=(-s -m 10 -u $user:$password)
+
 # Check if config.php exist
-[[ -r "$NextCloudPath"/config/config.php ]] || { echo >&2 "[ERROR] config.php could not be read under "$NextCloudPath"/config/config.php. Please check the path and permissions"; exit 1; }
+[[ -r "$NextCloudPath"/config/config.php ]] || {
+	echo >&2 "[ERROR] config.php could not be read under "$NextCloudPath"/config/config.php. Please check the path and permissions"
+	exit 1
+}
 
 # Fetch data directory place from the config file
 DataDirectory=$(grep datadirectory "$NextCloudPath"/config/config.php | cut -d "'" -f4)
 
 # Check if user Directory exist
-[[ -d "$DataDirectory/$user" ]] || { echo >&2 "[ERROR] User "$user" could not be found. Please check if case is correct"; exit 1; }
+[[ -d "$DataDirectory/$user" ]] || {
+	echo >&2 "[ERROR] User "$user" could not be found. Please check if case is correct"
+	exit 1
+}
 
-getFileID () {
+getFileID() {
 
-	fileid="$(curl -s -m 10 -u $user:$password ''$NextcloudURL'/remote.php/dav/files/'${user}'/'${fileToTag}'' \
--X PROPFIND --data '<?xml version="1.0" encoding="UTF-8"?>
+	fileid="$(curl $curlOptions ''$NextcloudURL'/remote.php/dav/files/'${user}'/'${fileToTag}'' \
+		-X PROPFIND --data '<?xml version="1.0" encoding="UTF-8"?>
  <d:propfind xmlns:d="DAV:">
    <d:prop xmlns:oc="http://owncloud.org/ns">
      <oc:fileid/>
@@ -58,10 +66,10 @@ getFileID () {
 
 }
 
-getTag () {
+getTag() {
 
-	getAllTags="$(curl -s -m 10 -u $user:$password ''$NextcloudURL'/remote.php/dav/systemtags/' \
--X PROPFIND --data '<?xml version="1.0" ?>
+	getAllTags="$(curl $curlOptions ''$NextcloudURL'/remote.php/dav/systemtags/' \
+		-X PROPFIND --data '<?xml version="1.0" ?>
 <d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">
   <d:prop>
     <oc:id />
@@ -86,11 +94,11 @@ getTag () {
 
 }
 
-SetTag () {
+SetTag() {
 
-	curl -s -m 10 -u $user:$password ''$NextcloudURL'/remote.php/dav/systemtags-relations/files/'$fileid/$tagID \
--X PUT -H "Content-Type: application/json" \
---data '{"userVisible":true,\
+	curl $curlOptions ''$NextcloudURL'/remote.php/dav/systemtags-relations/files/'$fileid/$tagID \
+		-X PUT -H "Content-Type: application/json" \
+		--data '{"userVisible":true,\
 "userAssignable":true,\
 "canAssign":true,\
 "id":"'$tag'",\
@@ -99,12 +107,12 @@ SetTag () {
 
 }
 
-checkIfTagIsSet () {
+checkIfTagIsSet() {
 
 	if [[ -z "$fileid" ]]; then
 
-		getAllTags="$(curl -s -m 10 -u $user:$password ''$NextcloudURL'/remote.php/dav/systemtags-relations/files/'$fileid'' \
--X PROPFIND --data '<?xml version="1.0" ?>
+		getAllTags="$(curl $curlOptions ''$NextcloudURL'/remote.php/dav/systemtags-relations/files/'$fileid'' \
+			-X PROPFIND --data '<?xml version="1.0" ?>
 <d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">
   <d:prop>
     <oc:id />
@@ -130,17 +138,17 @@ checkIfTagIsSet () {
 
 }
 
-findDuplicates () {
+findDuplicates() {
 
 	echo "[PROGRESS] Searching for duplicates, this can take a long time..."
 	cd $DataDirectory/$user/files/
 
-	find . ! -empty -type f -exec md5sum {} + | sort | uniq -w32 -dD >> $LOCKFILE
+	find . ! -empty -type f -exec md5sum {} + | sort | uniq -w32 -dD >>$LOCKFILE
 	[[ "$LogLvL" == "Info" ]] && { echo "[INFO] Finally finished it is $(wc -l $LOCKFILE | awk '{print $1}') duplicates found"; }
 
 }
 
-checkLockFile () {
+checkLockFile() {
 
 	if [ -f "$LOCKFILE" ]; then
 
@@ -166,7 +174,7 @@ urlencode() {
 
 	local LANG=C i c e=''
 
-	for ((i=0;i<${#1};i++)); do
+	for ((i = 0; i < ${#1}; i++)); do
 
 		c=${1:$i:1}
 		[[ "$c" =~ [a-zA-Z0-9\.\~\_\-] ]] || printf -v c '%%%02X' "'$c"
@@ -212,7 +220,7 @@ while read line; do
 
 	checkIfTagIsSet
 
-done < $LOCKFILE
+done <$LOCKFILE
 
 #rm $LOCKFILE
 
