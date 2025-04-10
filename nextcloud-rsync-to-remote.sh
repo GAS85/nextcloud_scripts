@@ -26,9 +26,9 @@ excludeFromBackup="--exclude=data/updater*\
  --exclude=*.ocTransferId*.part\
  --exclude=data/appdata*/preview"
 
-# Compress to needs to have archive mount and sshfs installed.
+# Compress to needs to have "archivemount" and "sshfs" installed.
 CompressToArchive=false
-WhereToMount=/mnt/remoteSystem  # Needs to be set if CompressToArchive is true
+WhereToMount=/mnt/remoteSystem # Needs to be set if CompressToArchive is true
 RemoteArchiveName=backup.tar.gz # Needs to be set if CompressToArchive is true
 
 ##############################################################################

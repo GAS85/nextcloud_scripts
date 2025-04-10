@@ -98,7 +98,7 @@ messageToLog () {
 
 }
 
-Message="+++ Starting Cron Filescan +++"
+Message="+++ Starting Cron File scan +++"
 messageToLog
 date >> $CronLogFile
 

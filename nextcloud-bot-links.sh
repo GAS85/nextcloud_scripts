@@ -12,17 +12,17 @@ list="/usr/local/bin/nextcloud-bot-links-list"
 
 while test $# -gt 0; do
 	case "$1" in
-	--help)
-		echo "/links - A Nextcloud Talk chat wrapper for important links"
-		echo " "
-		echo "Simple execution: /links"
-		echo "Complex execution: /links wiki git"
-		exit 0
-		;;
-	*)
-		break
-		;;
-	esac
+		--help)
+			echo "/links - A Nextcloud Talk chat wrapper for important links"
+			echo " "
+			echo "Simple execution: /links"
+			echo "Complex execution: /links wiki git"
+			exit 0
+			;;
+		*)
+	break
+	;;
+esac
 done
 
 #Added input Validator
@@ -40,18 +40,18 @@ if [ "$validInput" = "" ]; then
 else
 	#Check if multiple words are separated by spaces
 	case "$validInput" in
-	*\ *)
-		multipleInput=$(echo "$validInput" | tr ' ' '|')
-		#will display exact multiple match, or an error message
-		if ! grep -E "$multipleInput" "$list"; then
-			echo "Hmmm, nothing was found"
-		fi
+		*\ * )
+			multipleInput=$(echo "$validInput" | tr ' ' '|')
+			#will display exact multiple match, or an error message
+			if ! grep -E "$multipleInput" "$list"; then
+				echo "Hmmm, nothing was found"
+			fi
 		;;
-	*)
-		#will display exact match, or an error message
-		if ! grep "$validInput" "$list"; then
-			echo "Hmmm, nothing was found"
-		fi
+		*)
+			#will display exact match, or an error message
+			if ! grep "$validInput" "$list"; then
+				echo "Hmmm, nothing was found"
+			fi
 		;;
 	esac
 fi

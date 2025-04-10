@@ -19,7 +19,7 @@
 * [nextcloud-file-sync](#nextcloud-file-sync) - Do External Shares rescan only
 * [nextcloud-gotify-activity](#nextcloud-gotify-activity) - Read Nextcloud Activity RSS and push updates to Gotify.
 * [nextcloud-gotify-notifications](#nextcloud-gotify-notifications) - Read Nextcloud Notifications and push or sync them to Gotify.
-* [nextcloud-hardlink-duplicates](#nextcloud-hardlink-duplicates) - Will create hardlinks to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
+* [nextcloud-hardlink-duplicates](#nextcloud-hardlink-duplicates) - Will create hard links to duplicated file together with [rdfind](https://github.com/pauldreik/rdfind).
 * [nextcloud-preview](#nextcloud-preview) - Automate preview generation
 * [nextcloud-rsync-to-remote](#nextcloud-rsync-to-remote) - Do data Folder rsync to remote via SSH with key Authentication, or into archive
 * [nextcloud-system-notification](#nextcloud-system-notification) - Get System Notifications into Nextcloud
@@ -27,7 +27,7 @@
 
 ----
 
-* [Nextcloud Talk Bots](#NextcloudTalkBots)
+* [Nextcloud Talk Bots](#nextcloud-talk-bots)
 * [nextcloud-bot-links-list](#nextcloud-bot-links-list) - List for a Links Nextcloud Talk bot
 * [nextcloud-bot-links](#nextcloud-bot-links) - Links Nextcloud Talk bot
 * [nextcloud-bot-rate-1-10](#nextcloud-bot-rate-1-10) - Nextcloud Talk bot to generate simple 1 to 10 rate
@@ -109,10 +109,10 @@ Configuration:
 
 ### nextcloud-file-sync
 
-Performs External Shares rescan only that will save a lot of time in compare to scan whole nextcloud. Basically, it works out from the box. Only that you must check you nextcloud path, log path and create a log file for `php occ` output.
-Will do external ONLY shares rescan for nextcloud.
+Performs External Shares re-scan only that will save a lot of time in compare to scan whole nextcloud. Basically, it works out from the box. Only that you must check you nextcloud path, log path and create a log file for `php occ` output.
+Will do external ONLY shares re-scan for nextcloud.
 
-Run it under _nextcloud user_ (for me it is www-data) basically twice per day at 2:30 and 14:30. You can run it also hourly. This is my cron config (for more cron examples, please refer to [manpages](http://manpages.ubuntu.com/manpages/focal/en/man5/crontab.5.html)):
+Run it under _nextcloud user_ (for me it is www-data) basically twice per day at 2:30 and 14:30. You can run it also hourly. This is my cron config (for more cron examples, please refer to [man pages](http://manpages.ubuntu.com/manpages/focal/en/man5/crontab.5.html)):
 
 ```bash
 30 2,14 * * * perl -e 'sleep int(rand(1800))' && /usr/local/bin/nextcloud-file-sync.sh #Nextcloud file sync
@@ -167,7 +167,7 @@ In order to reduce HDD space being used, this script will create hardlinks to du
 
 This script avoids parallel Preview Jobs and write execution time to the logs.
 
-Since last update, Application will detect if it is already run and will not be executed twice/parallel (https://help.nextcloud.com/t/clarity-on-the-crontab-settings-for-the-preview-generator-app/6144/54), so you can add it e.g. to execute each 20 Minutes as cron job directly. **This means that `nextcloud-preview.sh` is not needed anymore**, _only make sense if you would like to have execution information directly in nextcloud logs_.
+Since last update, Application will detect if it is already run and will not be executed [twice/parallel](https://help.nextcloud.com/t/clarity-on-the-crontab-settings-for-the-preview-generator-app/6144/54), so you can add it e.g. to execute each 20 Minutes as cron job directly. **This means that `nextcloud-preview.sh` is not needed anymore**, _only make sense if you would like to have execution information directly in nextcloud logs_.
 
 Will generate NC log output:
 
