@@ -42,7 +42,7 @@
 5. Use it
 
 ```bash
-wget https://git.sitnikov.ga/gas/nextcloud_scripts/archive/master.zip
+wget https://git.sitnikov.eu/gas/nextcloud_scripts/archive/master.zip
 unzip master.zip
 cd nextcloud_scripts
 chmod +x *.sh
