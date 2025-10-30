@@ -84,6 +84,8 @@ Syntax is nextcloud-auditlog.sh -h?Hv <user>
     <user> will generate output only for a particular user. Default - all users will be fetched from the nextcloud
 ```
 
+NOTE: Please move `nextcloud_auditlog.sh` to your cacti `scripts` directory and change ownership to your web server user.
+
 **TODO** Adjust for common config file and set limit to the users amount.
 
 ### nextcloud-av-notification
